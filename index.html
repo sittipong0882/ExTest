@@ -6,11 +6,10 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
-    <title>ระบบตรวจข้อสอบด้วยกล้อง - ZipGrade OMR</title>
+    <title>ระบบตรวจข้อสอบด้วยกล้อง v4</title>
     <style>
       :root {
         --primary: #4f46e5;
-        --primary-dark: #4338ca;
         --secondary: #0ea5e9;
         --bg: #f1f5f9;
         --card: #ffffff;
@@ -50,9 +49,6 @@
         color: var(--text);
         line-height: 1.6;
         min-height: 100vh;
-        transition:
-          background 0.3s,
-          color 0.3s;
       }
       .header {
         background: linear-gradient(
@@ -144,20 +140,9 @@
       }
       .section {
         display: none;
-        animation: fadeIn 0.25s ease;
       }
       .section.active {
         display: block;
-      }
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-          transform: translateY(6px);
-        }
-        to {
-          opacity: 1;
-          transform: none;
-        }
       }
       .section-title {
         font-size: 1.15rem;
@@ -409,15 +394,6 @@
         max-height: 92vh;
         overflow-y: auto;
         padding: 20px;
-        animation: slideUp 0.3s ease;
-      }
-      @keyframes slideUp {
-        from {
-          transform: translateY(100%);
-        }
-        to {
-          transform: translateY(0);
-        }
       }
       .modal-header {
         display: flex;
@@ -528,27 +504,6 @@
         border: 2px dashed rgba(255, 255, 255, 0.7);
         border-radius: 12px;
       }
-      .camera-frame::before,
-      .camera-frame::after {
-        content: "";
-        position: absolute;
-        width: 28px;
-        height: 28px;
-        border-color: #4f46e5;
-        border-style: solid;
-      }
-      .camera-frame::before {
-        top: -2px;
-        left: -2px;
-        border-width: 4px 0 0 4px;
-        border-radius: 12px 0 0 0;
-      }
-      .camera-frame::after {
-        bottom: -2px;
-        right: -2px;
-        border-width: 0 4px 4px 0;
-        border-radius: 0 0 12px 0;
-      }
       .camera-hint {
         position: absolute;
         bottom: 12px;
@@ -603,7 +558,6 @@
       }
       .result-table-wrap {
         overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
         margin-top: 10px;
       }
       table.result-table {
@@ -757,7 +711,6 @@
         background: var(--border);
         margin: 14px 0;
       }
-      /* Debug canvas */
       .debug-canvas-wrap {
         position: relative;
         width: 100%;
@@ -769,21 +722,6 @@
         width: 100%;
         display: block;
       }
-      /* Progress bar */
-      .progress-bar {
-        width: 100%;
-        height: 6px;
-        background: var(--border);
-        border-radius: 3px;
-        overflow: hidden;
-        margin-top: 10px;
-      }
-      .progress-fill {
-        height: 100%;
-        background: var(--primary);
-        transition: width 0.3s;
-      }
-      /* Confidence indicator */
       .conf-row {
         display: flex;
         justify-content: space-between;
@@ -795,19 +733,48 @@
       }
       .conf-row.high {
         background: rgba(16, 185, 129, 0.08);
-        border-color: rgba(16, 185, 129, 0.3);
       }
       .conf-row.medium {
         background: rgba(245, 158, 11, 0.08);
-        border-color: rgba(245, 158, 11, 0.3);
       }
       .conf-row.low {
         background: rgba(239, 68, 68, 0.08);
-        border-color: rgba(239, 68, 68, 0.3);
       }
       .threshold-slider {
         width: 100%;
         margin: 8px 0;
+      }
+      .info-box {
+        background: rgba(79, 70, 229, 0.08);
+        border-left: 3px solid var(--primary);
+        padding: 10px 12px;
+        border-radius: 6px;
+        font-size: 0.82rem;
+        margin-bottom: 12px;
+      }
+      .warning-box {
+        background: rgba(245, 158, 11, 0.1);
+        border-left: 3px solid var(--warning);
+        padding: 10px 12px;
+        border-radius: 6px;
+        font-size: 0.82rem;
+        margin-bottom: 12px;
+      }
+      .success-box {
+        background: rgba(16, 185, 129, 0.1);
+        border-left: 3px solid var(--success);
+        padding: 10px 12px;
+        border-radius: 6px;
+        font-size: 0.82rem;
+        margin-bottom: 12px;
+      }
+      .danger-box {
+        background: rgba(239, 68, 68, 0.1);
+        border-left: 3px solid var(--danger);
+        padding: 10px 12px;
+        border-radius: 6px;
+        font-size: 0.82rem;
+        margin-bottom: 12px;
       }
       @media (min-width: 640px) {
         .stats-grid {
@@ -841,30 +808,14 @@
           display: block !important;
         }
       }
-      .info-box {
-        background: rgba(79, 70, 229, 0.08);
-        border-left: 3px solid var(--primary);
-        padding: 10px 12px;
-        border-radius: 6px;
-        font-size: 0.82rem;
-        margin-bottom: 12px;
-      }
-      .warning-box {
-        background: rgba(245, 158, 11, 0.1);
-        border-left: 3px solid var(--warning);
-        padding: 10px 12px;
-        border-radius: 6px;
-        font-size: 0.82rem;
-        margin-bottom: 12px;
-      }
     </style>
   </head>
   <body>
     <header class="header">
       <div class="header-top">
         <div>
-          <h1>📷 ระบบตรวจข้อสอบด้วยกล้อง</h1>
-          <p>สแกนกระดาษ ZipGrade • อ่านคำตอบ • เทียบเฉลยอัตโนมัติ</p>
+          <h1>📷 ระบบตรวจข้อสอบด้วยกล้อง v4</h1>
+          <p>สแกน ZipGrade อัตโนมัติ — ตรวจจับ grid จากภาพจริง</p>
         </div>
         <button class="theme-toggle" id="themeToggle">🌙</button>
       </div>
@@ -889,7 +840,6 @@
     </nav>
 
     <main class="main">
-      <!-- DASHBOARD -->
       <section class="section active" id="section-dashboard">
         <div class="stats-grid">
           <div class="stat-card">
@@ -923,7 +873,6 @@
         </div>
       </section>
 
-      <!-- EXAMS -->
       <section class="section" id="section-exams">
         <div class="flex-between mb-2">
           <h2 class="section-title" style="margin: 0">📝 ชุดข้อสอบ</h2>
@@ -941,7 +890,6 @@
         <div id="examList"></div>
       </section>
 
-      <!-- SCAN -->
       <section class="section" id="section-scan">
         <h2 class="section-title">📷 สแกนตรวจข้อสอบ</h2>
 
@@ -969,7 +917,7 @@
             <video id="cameraVideo" autoplay playsinline muted></video>
             <div class="camera-placeholder" id="cameraPlaceholder">
               <div style="font-size: 2.5rem">📷</div>
-              <p>กด "เปิดกล้อง" เพื่อเริ่ม<br />หรือ "เลือกภาพจากเครื่อง"</p>
+              <p>กด "เปิดกล้อง" หรือ "เลือกภาพจากเครื่อง"</p>
             </div>
             <div class="camera-overlay" id="cameraOverlay">
               <div class="camera-frame"></div>
@@ -1006,44 +954,34 @@
           </div>
         </div>
 
-        <!-- Debug overlay -->
         <div class="card hidden" id="debugCard">
-          <div class="card-title">🔬 ตรวจสอบการอ่าน (Debug)</div>
-          <div class="info-box" style="font-size: 0.78rem">
-            วงกลม <span style="color: #10b981; font-weight: 700">เขียว</span> =
-            อ่านได้ชัด,
-            <span style="color: #f59e0b; font-weight: 700">เหลือง</span> =
-            ไม่แน่ใจ,
-            <span style="color: #ef4444; font-weight: 700">แดง</span> =
-            กำกวม/อ่านไม่ได้
-          </div>
+          <div class="card-title">🔬 ผลการอ่าน</div>
+          <div id="debugStats" class="info-box"></div>
           <div class="debug-canvas-wrap">
             <canvas id="debugCanvas"></canvas>
           </div>
           <div class="mt-2">
             <label style="font-size: 0.82rem; font-weight: 600"
-              >ปรับความไวการอ่าน (Threshold):
-              <span id="thresholdVal">0.35</span></label
+              >ความไวการอ่าน: <span id="thresholdVal">0.30</span></label
             >
             <input
               type="range"
               class="threshold-slider"
               id="thresholdSlider"
-              min="0.15"
-              max="0.70"
+              min="0.10"
+              max="0.75"
               step="0.01"
-              value="0.35"
+              value="0.30"
             />
           </div>
           <div id="confidenceList" class="mt-2"></div>
           <div class="btn-row mt-2">
             <button class="btn btn-warning" id="btnReprocess">
-              🔄 อ่านใหม่ด้วยค่าใหม่
+              🔄 อ่านใหม่
             </button>
           </div>
         </div>
 
-        <!-- Review -->
         <div class="card hidden" id="reviewCard">
           <div class="card-title">✅ ตรวจสอบคำตอบ</div>
           <div class="form-row">
@@ -1094,7 +1032,6 @@
         </div>
       </section>
 
-      <!-- RESULTS -->
       <section class="section" id="section-results">
         <h2 class="section-title">📋 ผลการตรวจ</h2>
         <div class="filter-row">
@@ -1119,7 +1056,6 @@
         <div id="resultList"></div>
       </section>
 
-      <!-- SETTINGS -->
       <section class="section" id="section-settings">
         <h2 class="section-title">⚙️ ตั้งค่า</h2>
         <div class="card">
@@ -1163,15 +1099,15 @@
         <div class="card">
           <div class="card-title">ℹ️ เกี่ยวกับ</div>
           <p class="text-muted" style="font-size: 0.85rem">
-            ระบบตรวจข้อสอบ OMR v2.0<br />
-            รองรับกระดาษ ZipGrade (20 ข้อ 5 ตัวเลือก 2 คอลัมน์)<br />
-            ใช้ Corner Detection + Perspective Correction + Otsu Threshold
+            ระบบตรวจข้อสอบ OMR v4.0<br />
+            • ตรวจจับ grid จาก Ink Projection จริง<br />
+            • Sample หาวงกลมจริงในแต่ละแถว<br />
+            • Relative comparison ต่อข้อ
           </p>
         </div>
       </section>
     </main>
 
-    <!-- Exam Modal -->
     <div class="modal-overlay" id="examModal">
       <div class="modal">
         <div class="modal-header">
@@ -1265,7 +1201,6 @@
       </div>
     </div>
 
-    <!-- Detail Modal -->
     <div class="modal-overlay" id="detailModal">
       <div class="modal">
         <div class="modal-header">
@@ -1276,7 +1211,6 @@
       </div>
     </div>
 
-    <!-- Loading -->
     <div class="loading-overlay" id="loadingOverlay">
       <div class="spinner"></div>
       <div class="loading-text" id="loadingText">กำลังประมวลผล...</div>
@@ -1287,19 +1221,15 @@
 
     <script>
       /* ============================================================
-   OMR System v2 - ZipGrade Form Reader
+   OMR System v4
    ============================================================ */
 
       const LS_KEYS = {
-        exams: "omr_exams_v2",
-        results: "omr_results_v2",
-        settings: "omr_settings_v2",
+        exams: "omr_exams_v4",
+        results: "omr_results_v4",
+        settings: "omr_settings_v4",
       };
       const CHOICE_LABELS = ["1", "2", "3", "4", "5"];
-      const NUM_QUESTIONS = 20;
-      const NUM_CHOICES = 5;
-      const NUM_COLUMNS = 2; // 2 columns (left: 1-10, right: 11-20)
-      const ROWS_PER_COLUMN = 10;
 
       let exams = [];
       let results = [];
@@ -1307,24 +1237,22 @@
         theme: "light",
         resolution: 1920,
         autoProcess: true,
-        threshold: 0.35,
+        threshold: 0.3,
       };
       let editingExamId = null;
       let currentAnswerGrid = [];
       let currentScanExam = null;
       let currentScanAnswers = [];
       let currentScanImageData = null;
-      let currentScanImageEl = null; // HTMLImageElement
+      let currentScanImageEl = null;
       let cameraStream = null;
       let facingMode = "environment";
       let lastOMRResult = null;
 
-      // Canvas for processing
       const workCanvas = document.createElement("canvas");
       const workCtx = workCanvas.getContext("2d", { willReadFrequently: true });
       const debugCanvas = document.getElementById("debugCanvas");
 
-      // ---------- Utils ----------
       function uid() {
         return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
       }
@@ -1387,7 +1315,6 @@
         document.getElementById("loadingOverlay").classList.remove("active");
       }
 
-      // ---------- Navigation ----------
       function switchSection(name) {
         document
           .querySelectorAll(".section")
@@ -1407,7 +1334,6 @@
         if (name === "settings") renderSettings();
       }
 
-      // ---------- Theme ----------
       function applyTheme(theme) {
         document.documentElement.setAttribute("data-theme", theme);
         document.getElementById("themeToggle").textContent =
@@ -1447,7 +1373,7 @@
                   (e) => `<div class="exam-item">
         <div class="exam-info">
           <div class="exam-name">${escapeHtml(e.name)}</div>
-          <div class="exam-meta">${e.questions} ข้อ • ${e.choices} ตัวเลือก • ${e.pointsPerQuestion} คะแนน/ข้อ</div>
+          <div class="exam-meta">${e.questions} ข้อ • ${e.choices} ตัวเลือก</div>
         </div>
         <div class="exam-actions">
           <button class="icon-btn" onclick="goToScanWithExam('${e.id}')" title="สแกน">📷</button>
@@ -1483,7 +1409,6 @@
                 })
                 .join("");
       }
-
       window.goToScanWithExam = function (id) {
         switchSection("scan");
         const sel = document.getElementById("scanExamSelect");
@@ -1530,7 +1455,6 @@
           )
           .join("");
       }
-
       function openExamModal(exam = null) {
         editingExamId = exam ? exam.id : null;
         document.getElementById("examModalTitle").textContent = exam
@@ -1709,7 +1633,6 @@
         }
         info.innerHTML = `📝 ${escapeHtml(currentScanExam.name)} • ${currentScanExam.questions} ข้อ • คะแนนเต็ม ${(currentScanExam.questions * currentScanExam.pointsPerQuestion).toFixed(1)}`;
       }
-
       async function openCamera() {
         try {
           if (cameraStream) stopCamera();
@@ -1734,8 +1657,7 @@
           btn.onclick = closeCamera;
           toast("เปิดกล้องแล้ว", "success");
         } catch (err) {
-          console.error(err);
-          toast('เปิดกล้องไม่ได้ — ใช้ปุ่ม "เลือกภาพ" แทน', "error", 4000);
+          toast('เปิดกล้องไม่ได้ — ใช้ "เลือกภาพ" แทน', "error", 4000);
         }
       }
       function stopCamera() {
@@ -1762,7 +1684,6 @@
         facingMode = facingMode === "environment" ? "user" : "environment";
         if (cameraStream) openCamera();
       }
-
       function capturePhoto() {
         const video = document.getElementById("cameraVideo");
         if (!video.videoWidth) {
@@ -1801,21 +1722,9 @@
       }
 
       // ============================================================
-      // OMR ENGINE v2 — ZipGrade Form Reader
+      // v4 OMR ENGINE — Ink Projection Grid Detection
       // ============================================================
 
-      /**
-       * Main OMR pipeline:
-       * 1. Load image to canvas
-       * 2. Convert to grayscale
-       * 3. Adaptive threshold (Otsu)
-       * 4. Detect 4 corner marks (dark squares)
-       * 5. Perspective transform → normalized rectangle
-       * 6. Locate bubble grid (left & right columns)
-       * 7. Sample bubble darkness for each cell
-       * 8. Determine student's answer per question
-       * 9. Render debug canvas showing detected bubbles
-       */
       async function processImage() {
         if (!currentScanImageData) {
           toast("ไม่มีภาพ", "error");
@@ -1827,14 +1736,11 @@
         }
         showLoading("กำลังอ่านกระดาษคำตอบ...");
         await new Promise((r) => setTimeout(r, 100));
-
         try {
-          // Load image into HTMLImageElement
           const img = await loadImage(currentScanImageData);
           currentScanImageEl = img;
 
-          // Resize to a manageable size for processing
-          const maxDim = 1400;
+          const maxDim = 1500;
           let w = img.width,
             h = img.height;
           const scale = Math.min(1, maxDim / Math.max(w, h));
@@ -1845,118 +1751,114 @@
           workCanvas.height = h;
           workCtx.drawImage(img, 0, 0, w, h);
 
-          // Step 1: Grayscale
           const imgData = workCtx.getImageData(0, 0, w, h);
           const gray = toGrayscale(imgData);
-
-          // Step 2: Otsu threshold → binary (0=black, 255=white)
           const otsuVal = otsuThreshold(gray);
           const binary = new Uint8ClampedArray(w * h);
-          for (let i = 0; i < gray.length; i++) {
+          for (let i = 0; i < gray.length; i++)
             binary[i] = gray[i] < otsuVal ? 0 : 255;
-          }
 
-          // Step 3: Find corner marks
-          // Search in 4 corner regions (each ~20% of image)
-          const searchW = Math.floor(w * 0.2);
-          const searchH = Math.floor(h * 0.2);
-
-          const corners = {
-            tl: findDarkSquare(binary, w, h, 0, 0, searchW, searchH),
-            tr: findDarkSquare(binary, w, h, w - searchW, 0, searchW, searchH),
-            bl: findDarkSquare(binary, w, h, 0, h - searchH, searchW, searchH),
-            br: findDarkSquare(
-              binary,
-              w,
-              h,
-              w - searchW,
-              h - searchH,
-              searchW,
-              searchH,
-            ),
-          };
-
-          // Check if all 4 corners found
-          const foundCorners = Object.entries(corners).filter(
-            ([k, v]) => v !== null,
+          // Find corner marks
+          const searchW = Math.floor(w * 0.22);
+          const searchH = Math.floor(h * 0.22);
+          const tl = findDarkSquare(binary, w, h, 0, 0, searchW, searchH);
+          const tr = findDarkSquare(
+            binary,
+            w,
+            h,
+            w - searchW,
+            0,
+            searchW,
+            searchH,
           );
-          if (foundCorners.length < 4) {
+          const bl = findDarkSquare(
+            binary,
+            w,
+            h,
+            0,
+            h - searchH,
+            searchW,
+            searchH,
+          );
+          const br = findDarkSquare(
+            binary,
+            w,
+            h,
+            w - searchW,
+            h - searchH,
+            searchW,
+            searchH,
+          );
+
+          const foundCount = [tl, tr, bl, br].filter((c) => c !== null).length;
+          if (foundCount < 4) {
             hideLoading();
             toast(
-              `พบจุดมุม ${foundCorners.length}/4 — กรุณาถ่ายใหม่ให้เห็นจุดดำทั้ง 4 มุมชัดเจน`,
+              `พบจุดมุม ${foundCount}/4 — ถ่ายใหม่ให้เห็นจุดดำครบ 4 มุม`,
               "error",
               5000,
             );
             return;
           }
 
-          // Step 4: Perspective transform
-          // Source corners: [tl, tr, bl, br] as found
-          // Dest: rectangle with known aspect ratio matching ZipGrade form
-          // ZipGrade form: ~8.5x11 inch (letter), ratio ~ 1.294
-          // Bubble area (excluding header/footer): from ~25% to ~88% height
-          const outW = 800;
-          const outH = 1100;
+          // Warp to rectangle
+          const outW = 1000;
+          const outH = 1400;
           const warped = perspectiveWarp(
             binary,
             w,
             h,
-            [corners.tl, corners.tr, corners.bl, corners.br],
+            [tl, tr, bl, br],
             outW,
             outH,
           );
 
-          // Step 5: Detect bubble grid
+          // v4: Detect grid from ink projection
           const examConfig = {
             questions: currentScanExam.questions,
             choices: currentScanExam.choices,
             columns: currentScanExam.questions > 10 ? 2 : 1,
           };
 
-          const omrResult = readBubbles(
-            warped,
-            examConfig,
-            parseFloat(document.getElementById("thresholdSlider").value) ||
-              0.35,
-          );
+          const threshold =
+            parseFloat(document.getElementById("thresholdSlider").value) || 0.3;
+          const omrResult = readBubblesV4(warped, examConfig, threshold);
+
           lastOMRResult = {
             warped,
-            corners,
+            corners: [tl, tr, bl, br],
             omrResult,
             originalSize: { w, h },
+            img,
           };
 
-          // Step 6: Render debug canvas
-          renderDebugCanvas(img, corners, omrResult, w, h);
-
-          // Step 7: Show debug card
+          // Render debug
+          renderDebugV4(omrResult, outW, outH);
           document.getElementById("debugCard").classList.remove("hidden");
+          document.getElementById("debugStats").innerHTML = `
+      📊 พบ grid: ${omrResult.gridInfo.rowsFound} แถว × ${omrResult.gridInfo.colsFound} คอลัมน์ • 
+      Bubble radius: ${omrResult.gridInfo.bubbleRadius}px
+    `;
           renderConfidenceList(omrResult);
 
-          // Step 8: Set current answers & show review
           currentScanAnswers = omrResult.answers;
           renderReviewTable();
           document.getElementById("reviewCard").classList.remove("hidden");
           document.getElementById("scoreCard").classList.add("hidden");
-
           hideLoading();
 
-          // Report warnings
           const warnings = [];
           const unreadable = omrResult.answers.filter((a) => a === -2).length;
           const unanswered = omrResult.answers.filter((a) => a === -1).length;
-          const lowConf = omrResult.confidences.filter((c) => c < 0.4).length;
+          const lowConf = omrResult.confidences.filter((c) => c < 0.35).length;
 
-          if (unreadable > 0)
-            warnings.push(`${unreadable} ข้อกำกวม (ฝนหลายช่อง)`);
+          if (unreadable > 0) warnings.push(`${unreadable} ข้อกำกวม`);
           if (unanswered > 0) warnings.push(`${unanswered} ข้อไม่พบรอยฝน`);
-          if (lowConf > 0) warnings.push(`${lowConf} ข้อความมั่นใจต่ำ`);
+          if (lowConf > 0) warnings.push(`${lowConf} ข้อไม่ชัดเจน`);
 
-          if (warnings.length > 0) {
+          if (warnings.length > 0)
             toast("อ่านเสร็จ: " + warnings.join(" • "), "warning", 4000);
-          } else {
-            toast("อ่านคำตอบสำเร็จ ✓", "success");
-          }
+          else toast("อ่านคำตอบสำเร็จ ✓", "success");
         } catch (err) {
           console.error(err);
           hideLoading();
@@ -1964,7 +1866,6 @@
         }
       }
 
-      // ---------- Image Loading ----------
       function loadImage(src) {
         return new Promise((resolve, reject) => {
           const img = new Image();
@@ -1973,8 +1874,6 @@
           img.src = src;
         });
       }
-
-      // ---------- Grayscale ----------
       function toGrayscale(imgData) {
         const d = imgData.data;
         const gray = new Uint8ClampedArray(imgData.width * imgData.height);
@@ -1983,8 +1882,6 @@
         }
         return gray;
       }
-
-      // ---------- Otsu Threshold ----------
       function otsuThreshold(gray) {
         const hist = new Array(256).fill(0);
         for (let i = 0; i < gray.length; i++) hist[gray[i]]++;
@@ -2011,35 +1908,22 @@
         }
         return threshold;
       }
-
-      // ---------- Corner Detection ----------
-      /**
-       * Find a dark square (corner mark) within a search region.
-       * Uses integral-image-like sliding window to find the darkest region.
-       * Returns {x, y, size} or null.
-       */
       function findDarkSquare(binary, w, h, sx, sy, sw, sh) {
-        // Search for a square of dark pixels. Corner marks are ~1.5% of image width.
         const expectedSize = Math.max(8, Math.floor(Math.min(w, h) * 0.025));
         const step = Math.max(2, Math.floor(expectedSize / 3));
-
         let bestScore = 0,
           bestX = -1,
           bestY = -1,
           bestSize = expectedSize;
-
-        // Try a few sizes around expected
         const sizes = [
           expectedSize,
           Math.floor(expectedSize * 0.7),
           Math.floor(expectedSize * 1.4),
         ];
-
         for (const size of sizes) {
           if (size < 4) continue;
           for (let y = sy; y <= sy + sh - size; y += step) {
             for (let x = sx; x <= sx + sw - size; x += step) {
-              // Sample darkness in this square (sample every 2px)
               let dark = 0,
                 total = 0;
               for (let dy = 0; dy < size; dy += 2) {
@@ -2052,7 +1936,6 @@
                 }
               }
               const score = total > 0 ? dark / total : 0;
-              // Prefer darker AND closer to corner (tie-break)
               const distFromCorner = Math.hypot(
                 x - (sx + sw / 2),
                 y - (sy + sh / 2),
@@ -2067,27 +1950,18 @@
             }
           }
         }
-
         if (bestScore < 0.5) return null;
         return { x: bestX, y: bestY, size: bestSize, score: bestScore };
       }
-
-      // ---------- Perspective Warp ----------
       function perspectiveWarp(binary, w, h, srcCorners, outW, outH) {
         const [tl, tr, bl, br] = srcCorners;
-
-        // Destination corners (rectangle)
-        const dstCorners = [
+        const dst = [
           { x: 0, y: 0 },
           { x: outW - 1, y: 0 },
           { x: 0, y: outH - 1 },
           { x: outW - 1, y: outH - 1 },
         ];
-
-        // Compute homography from dst → src (so we can iterate dest and sample src)
-        // We need H such that: src = H * dst
-        const H = computeHomography(dstCorners, [tl, tr, bl, br]);
-
+        const H = computeHomography(dst, [tl, tr, bl, br]);
         const out = new Uint8ClampedArray(outW * outH);
         for (let y = 0; y < outH; y++) {
           for (let x = 0; x < outW; x++) {
@@ -2100,27 +1974,20 @@
             const sy = (H[3] * x + H[4] * y + H[5]) / denom;
             const ix = Math.round(sx),
               iy = Math.round(sy);
-            if (ix >= 0 && ix < w && iy >= 0 && iy < h) {
-              out[y * outW + x] = binary[iy * w + ix];
-            } else {
-              out[y * outW + x] = 255;
-            }
+            out[y * outW + x] =
+              ix >= 0 && ix < w && iy >= 0 && iy < h
+                ? binary[iy * w + ix]
+                : 255;
           }
         }
         return { data: out, width: outW, height: outH };
       }
-
-      /**
-       * Compute homography matrix H (8 params) mapping src → dst.
-       * We solve 8 linear equations.
-       * src[i] = (x_i, y_i) maps to dst[i] = (u_i, v_i)
-       */
       function computeHomography(src, dst) {
-        const A = [];
-        const b = [];
+        const A = [],
+          b = [];
         for (let i = 0; i < 4; i++) {
-          const { x, y } = src[i];
-          const { x: u, y: v } = dst[i];
+          const { x, y } = src[i],
+            { x: u, y: v } = dst[i];
           A.push([x, y, 1, 0, 0, 0, -u * x, -u * y]);
           b.push(u);
           A.push([0, 0, 0, x, y, 1, -v * x, -v * y]);
@@ -2128,12 +1995,9 @@
         }
         return solveLinear(A, b);
       }
-
       function solveLinear(A, b) {
         const n = A.length;
-        // Augmented matrix
         const M = A.map((row, i) => [...row, b[i]]);
-        // Forward elimination with partial pivot
         for (let i = 0; i < n; i++) {
           let maxRow = i;
           for (let k = i + 1; k < n; k++)
@@ -2146,7 +2010,6 @@
             for (let j = i; j <= n; j++) M[k][j] -= factor * M[i][j];
           }
         }
-        // Back substitution
         const x = new Array(n).fill(0);
         for (let i = n - 1; i >= 0; i--) {
           let s = M[i][n];
@@ -2156,169 +2019,465 @@
         return x;
       }
 
-      // ---------- Bubble Grid Reading ----------
+      // ============================================================
+      // v4 CORE — Grid detection from Ink Projection
+      // ============================================================
       /**
-       * Read bubble answers from the warped binary image.
-       *
-       * ZipGrade form layout (from user's image):
-       * - Header area (name, class) at top ~25% of paper
-       * - Bubble grid area from ~28% to ~88% of paper height
-       * - 2 columns: left = Q1-10, right = Q11-20 (for 20Q form)
-       * - Each column has 5 bubble columns (choices 1-5)
-       *
-       * We detect the grid by:
-       * 1. Estimate grid area from known proportions
-       * 2. For each question row, sample 5 bubble positions
-       * 3. Compute darkness of each → pick darkest above threshold
+       * v4 algorithm:
+       * 1. Split image into content area (top~bottom)
+       * 2. For each column, find bubble row positions using horizontal ink profile peaks
+       * 3. For each row, find bubble column positions using vertical ink profile peaks
+       * 4. Sample each bubble
+       * 5. Use relative comparison for answer decision
        */
-      function readBubbles(warped, config, threshold = 0.35) {
+      function readBubblesV4(warped, config, userThreshold) {
         const { data, width: w, height: h } = warped;
         const { questions, choices, columns } = config;
         const rows = Math.ceil(questions / columns);
 
-        // Grid area estimation (based on ZipGrade form layout)
-        // From the image: bubble area starts ~28% from top, ends ~88%
-        // Left column starts ~10%, right column ends ~90%
-        const gridTop = Math.floor(h * 0.28);
-        const gridBottom = Math.floor(h * 0.88);
-        const gridLeft = Math.floor(w * 0.08);
-        const gridRight = Math.floor(w * 0.92);
+        // ============================================================
+        // Step 1: Compute horizontal ink profile (per row)
+        // ============================================================
+        const rowInk = new Array(h).fill(0);
+        for (let y = 0; y < h; y++) {
+          let ink = 0;
+          for (let x = 0; x < w; x++) if (data[y * w + x] === 0) ink++;
+          rowInk[y] = ink;
+        }
 
-        const gridW = gridRight - gridLeft;
-        const gridH = gridBottom - gridTop;
+        // Find content top & bottom (first/last row with significant ink)
+        const inkThreshold = Math.max(3, w * 0.008);
+        let contentTop = 0,
+          contentBottom = h - 1;
+        for (let y = 0; y < h; y++)
+          if (rowInk[y] > inkThreshold) {
+            contentTop = y;
+            break;
+          }
+        for (let y = h - 1; y >= 0; y--)
+          if (rowInk[y] > inkThreshold) {
+            contentBottom = y;
+            break;
+          }
 
-        const colW = gridW / columns;
-        const rowH = gridH / rows;
+        // ============================================================
+        // Step 2: Find header/bubble separator using vertical profile
+        // ============================================================
+        // Bubble rows have regular dark circles → peaks in rowInk
+        // Header has text but is variable. Use proportional: bubbles start at 25-30%
+        const contentH = contentBottom - contentTop;
+        const searchStart = contentTop + Math.floor(contentH * 0.15);
+        const searchEnd = contentTop + Math.floor(contentH * 0.4);
+        let gapStart = -1,
+          gapEnd = -1,
+          gapBest = 0,
+          curGapStart = -1;
+        for (let y = searchStart; y < searchEnd; y++) {
+          if (rowInk[y] < inkThreshold * 0.4) {
+            if (curGapStart === -1) curGapStart = y;
+          } else {
+            if (curGapStart !== -1) {
+              const gapLen = y - curGapStart;
+              if (gapLen > gapBest) {
+                gapBest = gapLen;
+                gapStart = curGapStart;
+                gapEnd = y;
+              }
+              curGapStart = -1;
+            }
+          }
+        }
+        let bubbleTop, bubbleBottom;
+        if (gapBest > 8 && gapStart > 0) {
+          bubbleTop = gapEnd;
+          bubbleBottom = contentBottom;
+        } else {
+          bubbleTop = contentTop + Math.floor(contentH * 0.3);
+          bubbleBottom = contentBottom;
+        }
 
-        // Within each column, question number takes left ~22%, then 5 bubbles
-        const qNumW = colW * 0.2;
-        const bubbleAreaW = colW - qNumW;
-        const bubbleSpacing = bubbleAreaW / choices;
-        const bubbleRadius = Math.max(
-          3,
-          Math.floor(Math.min(rowH, bubbleSpacing) * 0.32),
+        // ============================================================
+        // Step 3: Find bubble row CENTERS using rowInk peaks
+        // ============================================================
+        const bubbleH = bubbleBottom - bubbleTop;
+        const rowInkSection = new Array(h).fill(0);
+        for (let y = bubbleTop; y <= bubbleBottom; y++) {
+          let ink = 0;
+          for (let x = 0; x < w; x++) if (data[y * w + x] === 0) ink++;
+          rowInkSection[y] = ink;
+        }
+
+        // Smooth rowInkSection with a moving average
+        const smoothed = new Array(h).fill(0);
+        const win = Math.max(2, Math.floor((bubbleH / rows) * 0.15));
+        for (let y = bubbleTop; y <= bubbleBottom; y++) {
+          let sum = 0,
+            count = 0;
+          for (let k = -win; k <= win; k++) {
+            const yy = y + k;
+            if (yy >= bubbleTop && yy <= bubbleBottom) {
+              sum += rowInkSection[yy];
+              count++;
+            }
+          }
+          smoothed[y] = sum / count;
+        }
+
+        // Find peaks (row centers)
+        const rowCenters = [];
+        const minRowSpacing = Math.max(8, Math.floor((bubbleH / rows) * 0.55));
+        const avgInk =
+          smoothed.slice(bubbleTop, bubbleBottom).reduce((s, x) => s + x, 0) /
+          (bubbleBottom - bubbleTop);
+        const peakThreshold = avgInk * 1.15;
+
+        for (let y = bubbleTop + 2; y <= bubbleBottom - 2; y++) {
+          if (
+            smoothed[y] > peakThreshold &&
+            smoothed[y] > smoothed[y - 1] &&
+            smoothed[y] > smoothed[y + 1] &&
+            smoothed[y] >= smoothed[y - 2] &&
+            smoothed[y] >= smoothed[y + 2]
+          ) {
+            // Check distance from last peak
+            if (
+              rowCenters.length === 0 ||
+              y - rowCenters[rowCenters.length - 1].y > minRowSpacing
+            ) {
+              rowCenters.push({ y });
+            }
+          }
+        }
+
+        // If we didn't find enough peaks, use uniform spacing
+        let finalRowCenters = [];
+        if (
+          rowCenters.length >= rows * 0.7 &&
+          rowCenters.length <= rows * 1.3
+        ) {
+          // Use detected peaks, resample to exactly `rows` positions
+          finalRowCenters = resamplePeaks(
+            rowCenters.map((p) => p.y),
+            rows,
+            bubbleTop,
+            bubbleBottom,
+          );
+        } else {
+          // Uniform spacing fallback
+          for (let i = 0; i < rows; i++) {
+            finalRowCenters.push(bubbleTop + (i + 0.5) * (bubbleH / rows));
+          }
+        }
+
+        // ============================================================
+        // Step 4: Find column X positions using vertical ink profile
+        // ============================================================
+        // Compute column ink profile within bubble area
+        const colInk = new Array(w).fill(0);
+        for (let x = 0; x < w; x++) {
+          let ink = 0;
+          for (let y = bubbleTop; y <= bubbleBottom; y++)
+            if (data[y * w + x] === 0) ink++;
+          colInk[x] = ink;
+        }
+
+        // Find content left/right
+        let contentLeft = 0,
+          contentRight = w - 1;
+        const colInkThresh = Math.max(3, bubbleH * 0.005);
+        for (let x = 0; x < w; x++)
+          if (colInk[x] > colInkThresh) {
+            contentLeft = x;
+            break;
+          }
+        for (let x = w - 1; x >= 0; x--)
+          if (colInk[x] > colInkThresh) {
+            contentRight = x;
+            break;
+          }
+
+        const contentW = contentRight - contentLeft;
+
+        // Find peaks in colInk = bubble column positions
+        // We expect `columns * choices` peaks = e.g., 2*5 = 10 peaks
+        // Plus question number column (~10% of column width)
+        const colPeaks = [];
+        const expectedColPeaks = columns * choices;
+        const minColSpacing = Math.max(
+          6,
+          Math.floor(contentW / (expectedColPeaks * 3)),
         );
+        const colAvg =
+          colInk.slice(contentLeft, contentRight).reduce((s, x) => s + x, 0) /
+          contentW;
+        const colPeakThresh = colAvg * 1.2;
 
+        // Smooth colInk
+        const colSmoothed = new Array(w).fill(0);
+        const colWin = Math.max(2, Math.floor(contentW / 100));
+        for (let x = contentLeft; x <= contentRight; x++) {
+          let sum = 0,
+            count = 0;
+          for (let k = -colWin; k <= colWin; k++) {
+            const xx = x + k;
+            if (xx >= contentLeft && xx <= contentRight) {
+              sum += colInk[xx];
+              count++;
+            }
+          }
+          colSmoothed[x] = sum / count;
+        }
+
+        for (let x = contentLeft + 2; x <= contentRight - 2; x++) {
+          if (
+            colSmoothed[x] > colPeakThresh &&
+            colSmoothed[x] > colSmoothed[x - 1] &&
+            colSmoothed[x] > colSmoothed[x + 1]
+          ) {
+            if (
+              colPeaks.length === 0 ||
+              x - colPeaks[colPeaks.length - 1] > minColSpacing
+            ) {
+              colPeaks.push(x);
+            }
+          }
+        }
+
+        // ============================================================
+        // Step 5: Determine bubble X positions for each column
+        // ============================================================
+        // ZipGrade layout: each column has [questionNumber, b1, b2, b3, b4, b5]
+        // The question number's ink is similar to bubbles but positioned left
+        // Strategy: find clusters of `choices` peaks with regular spacing
+
+        const bubbleXsByColumn = []; // array of arrays: each column has `choices` x positions
+        const colW = contentW / columns;
+
+        for (let col = 0; col < columns; col++) {
+          const colStartX = contentLeft + col * colW;
+          const colEndX = colStartX + colW;
+          // Get peaks in this column
+          const colPeaksInCol = colPeaks.filter(
+            (x) => x >= colStartX && x <= colEndX,
+          );
+
+          let bubbleXs;
+          if (
+            colPeaksInCol.length >= choices &&
+            colPeaksInCol.length <= choices + 2
+          ) {
+            // We have peaks — find the rightmost `choices` peaks (skip question number on left)
+            // Sort ascending
+            colPeaksInCol.sort((a, b) => a - b);
+            // Use the last `choices` peaks (or first if question number is on right — unlikely)
+            bubbleXs = colPeaksInCol.slice(-choices);
+          } else if (colPeaksInCol.length > choices + 2) {
+            // Too many peaks — sample evenly
+            colPeaksInCol.sort((a, b) => a - b);
+            bubbleXs = [];
+            for (let i = 0; i < choices; i++) {
+              const idx =
+                Math.round(((i + 0.5) * colPeaksInCol.length) / choices) - 1;
+              bubbleXs.push(
+                colPeaksInCol[
+                  Math.max(0, Math.min(colPeaksInCol.length - 1, idx))
+                ],
+              );
+            }
+          } else {
+            // Not enough peaks — use proportional layout
+            // bubble area starts after ~20% (question number)
+            const qNumW = colW * 0.18;
+            const bubbleAreaW = colW - qNumW;
+            const spacing = bubbleAreaW / choices;
+            bubbleXs = [];
+            for (let i = 0; i < choices; i++) {
+              bubbleXs.push(
+                Math.floor(colStartX + qNumW + spacing * (i + 0.5)),
+              );
+            }
+          }
+          bubbleXsByColumn.push(bubbleXs);
+        }
+
+        // ============================================================
+        // Step 6: Estimate bubble radius
+        // ============================================================
+        // Use spacing between bubble X positions
+        let avgSpacing = 0,
+          count = 0;
+        for (const xs of bubbleXsByColumn) {
+          for (let i = 1; i < xs.length; i++) {
+            avgSpacing += xs[i] - xs[i - 1];
+            count++;
+          }
+        }
+        if (count > 0) avgSpacing /= count;
+        // Also consider row spacing
+        let rowSpacing = 0;
+        if (finalRowCenters.length > 1) {
+          for (let i = 1; i < finalRowCenters.length; i++)
+            rowSpacing += finalRowCenters[i] - finalRowCenters[i - 1];
+          rowSpacing /= finalRowCenters.length - 1;
+        }
+        const minSpacing = Math.min(avgSpacing, rowSpacing || avgSpacing);
+        // Bubble radius = 35% of spacing (bubble is about 70% of cell)
+        const bubbleRadius = Math.max(4, Math.floor(minSpacing * 0.32));
+
+        // ============================================================
+        // Step 7: Sample bubbles
+        // ============================================================
         const answers = [];
         const confidences = [];
-        const debugBubbles = []; // For rendering
+        const debugBubbles = [];
+        const rowYByQ = []; // for debug
 
         for (let q = 0; q < questions; q++) {
           const col = Math.floor(q / rows);
           const row = q % rows;
-          const colLeft = gridLeft + col * colW;
-          const rowTop = gridTop + row * rowH;
-          const rowCenterY = rowTop + rowH / 2;
+          const cy = finalRowCenters[row];
+          rowYByQ.push(cy);
+          const bubbleXs = bubbleXsByColumn[col];
 
-          // Sample darkness of each choice
           const darkness = [];
           const positions = [];
           for (let c = 0; c < choices; c++) {
-            const bx = Math.floor(colLeft + qNumW + bubbleSpacing * (c + 0.5));
-            const by = Math.floor(rowCenterY);
-            const d = sampleCircleDarkness(data, w, h, bx, by, bubbleRadius);
+            const bx =
+              bubbleXs[c] !== undefined
+                ? bubbleXs[c]
+                : bubbleXs[0] + c * avgSpacing;
+            const by = cy;
+            // Sample at 3 positions: center + slight vertical offsets, take max
+            const d1 = sampleCircleDarkness(data, w, h, bx, by, bubbleRadius);
+            const d2 = sampleCircleDarkness(
+              data,
+              w,
+              h,
+              bx,
+              by - Math.floor(bubbleRadius * 0.4),
+              bubbleRadius,
+            );
+            const d3 = sampleCircleDarkness(
+              data,
+              w,
+              h,
+              bx,
+              by + Math.floor(bubbleRadius * 0.4),
+              bubbleRadius,
+            );
+            const d = Math.max(d1, d2, d3);
             darkness.push(d);
-            positions.push({ x: bx, y: by, r: bubbleRadius });
+            positions.push({ x: bx, y: by, r: bubbleRadius, d });
           }
 
-          // Decision logic
-          const maxD = Math.max(...darkness);
-          const minD = Math.min(...darkness);
-          const range = maxD - minD;
+          // Decision: relative comparison
+          const sorted = darkness
+            .map((d, i) => ({ d, i }))
+            .sort((a, b) => b.d - a.d);
+          const top1 = sorted[0],
+            top2 = sorted[1] || { d: 0 };
+          const meanOthers =
+            sorted.slice(1).reduce((s, x) => s + x.d, 0) /
+            Math.max(1, sorted.length - 1);
+          const relBoost = top1.d - meanOthers;
 
-          // Find filled bubbles (significantly darker than white background)
-          // White ~ 1.0 (binary 255), dark ~ 0.0 (binary 0)
-          // We use "darkness" = fraction of dark pixels (0 = white, 1 = black)
-          const absThreshold = threshold; // default 0.35
-
-          let answer = -1;
-          let confidence = 0;
-          let status = "unanswered"; // 'single', 'ambiguous', 'unanswered', 'faint'
-
-          if (maxD < absThreshold * 0.5) {
-            // Nothing filled at all
-            answer = -1;
-            confidence = 1 - maxD; // confident it's empty
+          let answer = -1,
+            confidence = 0,
             status = "unanswered";
-          } else {
-            // Find all bubbles above threshold
-            const filled = [];
-            for (let c = 0; c < choices; c++) {
-              if (darkness[c] >= absThreshold) filled.push(c);
-            }
 
-            if (filled.length === 0) {
-              // Nothing above threshold but something below
-              // Might be faint mark — pick darkest if it's clearly darkest
-              const sorted = darkness
-                .map((d, i) => ({ d, i }))
-                .sort((a, b) => b.d - a.d);
-              if (sorted[0].d > sorted[1].d * 1.8 && sorted[0].d > 0.18) {
-                answer = sorted[0].i;
-                confidence = sorted[0].d;
-                status = "faint";
-              } else {
-                answer = -1;
-                confidence = 1 - maxD;
-                status = "unanswered";
-              }
-            } else if (filled.length === 1) {
-              answer = filled[0];
-              confidence = darkness[filled[0]];
-              status = "single";
-            } else {
-              // Multiple filled — check if one is clearly darkest
-              filled.sort((a, b) => darkness[b] - darkness[a]);
-              if (darkness[filled[0]] - darkness[filled[1]] > 0.25) {
-                answer = filled[0];
-                confidence = darkness[filled[0]] - darkness[filled[1]];
-                status = "single";
-              } else {
-                answer = -2; // ambiguous
-                confidence = 0.5;
-                status = "ambiguous";
-              }
-            }
+          if (top1.d >= userThreshold && relBoost >= 0.15) {
+            answer = top1.i;
+            confidence = Math.min(1, top1.d * 0.6 + relBoost * 2);
+            status = "single";
+          } else if (
+            top1.d >= userThreshold * 0.5 &&
+            relBoost >= 0.18 &&
+            top1.d > top2.d * 1.4
+          ) {
+            answer = top1.i;
+            confidence = Math.min(1, relBoost * 3);
+            status = "faint";
+          } else if (
+            top1.d >= userThreshold * 0.55 &&
+            top2.d >= userThreshold * 0.55 &&
+            top1.d - top2.d < 0.1
+          ) {
+            answer = -2;
+            confidence = 0.5;
+            status = "ambiguous";
+          } else if (top1.d >= 0.18 && relBoost >= 0.12) {
+            answer = top1.i;
+            confidence = Math.min(1, relBoost * 3);
+            status = "faint";
+          } else {
+            answer = -1;
+            confidence = Math.max(0, 1 - top1.d * 2);
+            status = "unanswered";
+          }
+
+          if (
+            status === "faint" &&
+            top2.d >= top1.d * 0.75 &&
+            top2.d > userThreshold * 0.4
+          ) {
+            answer = -2;
+            status = "ambiguous";
+            confidence = 0.5;
           }
 
           answers.push(answer);
           confidences.push(confidence);
-          debugBubbles.push({ q, positions, darkness, answer, status });
+          debugBubbles.push({ q, positions, darkness, answer, status, cy });
         }
 
         return {
           answers,
           confidences,
           debugBubbles,
-          grid: {
-            gridTop,
-            gridBottom,
-            gridLeft,
-            gridRight,
-            colW,
-            rowH,
+          gridInfo: {
             bubbleRadius,
-            choices,
-            rows,
-            columns,
+            rowsFound: finalRowCenters.length,
+            colsFound: columns,
+            bubbleXsByColumn,
+            finalRowCenters,
+            contentLeft,
+            contentRight,
+            bubbleTop,
+            bubbleBottom,
           },
         };
       }
 
-      /**
-       * Sample darkness in a circle: returns fraction of pixels that are dark.
-       * 0 = all white (no fill), 1 = all dark (full fill)
-       */
+      function resamplePeaks(peaks, targetCount, top, bottom) {
+        // If we have peaks, sort and resample to `targetCount`
+        const sorted = [...peaks].sort((a, b) => a - b);
+        if (sorted.length === targetCount) return sorted;
+        const result = [];
+        for (let i = 0; i < targetCount; i++) {
+          const t = (i + 0.5) / targetCount;
+          const idx = t * sorted.length;
+          const lo = Math.floor(idx);
+          const hi = Math.min(sorted.length - 1, lo + 1);
+          const frac = idx - lo;
+          result.push(sorted[lo] * (1 - frac) + sorted[hi] * frac);
+        }
+        return result;
+      }
+
       function sampleCircleDarkness(binary, w, h, cx, cy, r) {
         let dark = 0,
           total = 0;
         const r2 = r * r;
-        for (let y = cy - r; y <= cy + r; y++) {
-          for (let x = cx - r; x <= cx + r; x++) {
-            if (x < 0 || x >= w || y < 0 || y >= h) continue;
-            const dx = x - cx,
-              dy = y - cy;
-            if (dx * dx + dy * dy <= r2) {
+        const yStart = Math.max(0, cy - r),
+          yEnd = Math.min(h - 1, cy + r);
+        const xStart = Math.max(0, cx - r),
+          xEnd = Math.min(w - 1, cx + r);
+        for (let y = yStart; y <= yEnd; y++) {
+          const dy = y - cy;
+          const dy2 = dy * dy;
+          for (let x = xStart; x <= xEnd; x++) {
+            const dx = x - cx;
+            if (dx * dx + dy2 <= r2) {
               total++;
               if (binary[y * w + x] === 0) dark++;
             }
@@ -2327,46 +2486,32 @@
         return total > 0 ? dark / total : 0;
       }
 
-      // ---------- Debug Canvas Rendering ----------
-      function renderDebugCanvas(img, corners, omrResult, w, h) {
+      // ============================================================
+      // DEBUG RENDER
+      // ============================================================
+      function renderDebugV4(omrResult, w, h) {
         const canvas = document.getElementById("debugCanvas");
         canvas.width = w;
         canvas.height = h;
         const ctx = canvas.getContext("2d");
-        ctx.drawImage(img, 0, 0, w, h);
 
-        // Dark overlay for visibility
-        ctx.fillStyle = "rgba(0,0,0,0.35)";
+        // Draw warped image
+        const warped = lastOMRResult.warped;
+        const imgData = ctx.createImageData(w, h);
+        for (let i = 0; i < w * h; i++) {
+          const v = warped.data[i];
+          imgData.data[i * 4] = v;
+          imgData.data[i * 4 + 1] = v;
+          imgData.data[i * 4 + 2] = v;
+          imgData.data[i * 4 + 3] = 255;
+        }
+        ctx.putImageData(imgData, 0, 0);
+
+        // Overlay - lighten for visibility
+        ctx.fillStyle = "rgba(255,255,255,0.55)";
         ctx.fillRect(0, 0, w, h);
 
-        // Draw corner markers
-        ctx.strokeStyle = "#4f46e5";
-        ctx.lineWidth = 3;
-        for (const [name, c] of Object.entries(corners)) {
-          if (!c) continue;
-          ctx.beginPath();
-          ctx.arc(c.x, c.y, c.size * 1.5, 0, Math.PI * 2);
-          ctx.stroke();
-          ctx.fillStyle = "#4f46e5";
-          ctx.beginPath();
-          ctx.arc(c.x, c.y, 4, 0, Math.PI * 2);
-          ctx.fill();
-        }
-
-        // Draw the quadrilateral connecting corners
-        if (corners.tl && corners.tr && corners.bl && corners.br) {
-          ctx.strokeStyle = "#4f46e5";
-          ctx.lineWidth = 2;
-          ctx.beginPath();
-          ctx.moveTo(corners.tl.x, corners.tl.y);
-          ctx.lineTo(corners.tr.x, corners.tr.y);
-          ctx.lineTo(corners.br.x, corners.br.y);
-          ctx.lineTo(corners.bl.x, corners.bl.y);
-          ctx.closePath();
-          ctx.stroke();
-        }
-
-        // Draw bubble positions (colors based on status)
+        // Draw each bubble with color
         const { debugBubbles } = omrResult;
         for (const db of debugBubbles) {
           for (let c = 0; c < db.positions.length; c++) {
@@ -2374,13 +2519,13 @@
             const isSelected = db.answer === c;
             const dark = db.darkness[c];
 
-            // Color: green if selected & single, red if ambiguous, yellow if faint, gray otherwise
-            let color = "rgba(200,200,200,0.5)";
+            let color = "rgba(150,150,150,0.5)";
             if (db.status === "ambiguous") color = "rgba(239,68,68,0.9)";
-            else if (isSelected && db.status === "single")
-              color = "rgba(16,185,129,0.95)";
-            else if (isSelected && db.status === "faint")
-              color = "rgba(245,158,11,0.95)";
+            else if (
+              isSelected &&
+              (db.status === "single" || db.status === "faint")
+            )
+              color = "rgba(16,185,129,0.9)";
             else if (dark > 0.35) color = "rgba(245,158,11,0.7)";
 
             ctx.strokeStyle = color;
@@ -2389,11 +2534,8 @@
             ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
             ctx.stroke();
 
-            // Fill if selected
             if (isSelected) {
-              ctx.fillStyle = color
-                .replace("0.9", "0.25")
-                .replace("0.95", "0.3");
+              ctx.fillStyle = color.replace("0.9", "0.25");
               ctx.fill();
             }
           }
@@ -2408,13 +2550,11 @@
             const conf = confidences[i];
             let cls = "high";
             if (conf < 0.3) cls = "low";
-            else if (conf < 0.6) cls = "medium";
-
+            else if (conf < 0.55) cls = "medium";
             let status = "";
             if (a === -1) status = "ไม่พบรอยฝน";
             else if (a === -2) status = "กำกวม";
             else status = `อ่านได้: ${CHOICE_LABELS[a]}`;
-
             return `<div class="conf-row ${cls}">
       <span><b>ข้อ ${i + 1}</b></span>
       <span>${status}</span>
@@ -2422,10 +2562,12 @@
     </div>`;
           })
           .join("");
-        el.innerHTML = `<div style="max-height:200px;overflow-y:auto;">${rows}</div>`;
+        el.innerHTML = `<div style="max-height:220px;overflow-y:auto;">${rows}</div>`;
       }
 
-      // ---------- Review ----------
+      // ============================================================
+      // REVIEW & SCORE
+      // ============================================================
       function renderReviewTable() {
         if (!currentScanExam) return;
         const exam = currentScanExam;
@@ -2482,7 +2624,6 @@
           });
         });
       }
-
       function computeScore(answers, exam) {
         let correct = 0,
           wrong = 0,
@@ -2495,11 +2636,15 @@
           else if (a === correctAns) correct++;
           else wrong++;
         });
-        const score = correct * exam.pointsPerQuestion;
-        const totalPossible = exam.questions * exam.pointsPerQuestion;
-        return { correct, wrong, unanswered, ambiguous, score, totalPossible };
+        return {
+          correct,
+          wrong,
+          unanswered,
+          ambiguous,
+          score: correct * exam.pointsPerQuestion,
+          totalPossible: exam.questions * exam.pointsPerQuestion,
+        };
       }
-
       function saveResult() {
         if (!currentScanExam || !currentScanAnswers.length) {
           toast("ไม่มีข้อมูล", "error");
@@ -2537,7 +2682,6 @@
         renderDashboard();
         renderResults();
       }
-
       function renderScoreCard(stats, record) {
         const pct =
           stats.totalPossible > 0
@@ -2555,11 +2699,10 @@
     <div class="text-center mt-2">
       <div style="font-weight:700;">${escapeHtml(record.studentName)} ${record.studentId ? "(" + escapeHtml(record.studentId) + ")" : ""}</div>
       <div class="text-muted" style="font-size:0.82rem;">${escapeHtml(record.examName)} • ${formatDateTime(record.createdAt)}</div>
-      ${stats.ambiguous > 0 ? `<div class="text-muted" style="font-size:0.8rem;color:var(--ambiguous);">มี ${stats.ambiguous} ข้อกำกวม (นับเป็นผิด)</div>` : ""}
+      ${stats.ambiguous > 0 ? `<div style="font-size:0.8rem;color:var(--ambiguous);">มี ${stats.ambiguous} ข้อกำกวม (นับเป็นผิด)</div>` : ""}
     </div>
   `;
       }
-
       function resetScan() {
         currentScanImageData = null;
         currentScanAnswers = [];
@@ -2572,7 +2715,9 @@
         document.getElementById("studentId").value = "";
       }
 
-      // ---------- Results ----------
+      // ============================================================
+      // RESULTS
+      // ============================================================
       function renderResults() {
         const ef = document.getElementById("resultFilterExam").value;
         const s = document
@@ -2615,7 +2760,6 @@
           })
           .join("");
       }
-
       window.viewResult = function (id) {
         const r = results.find((x) => x.id === id);
         if (!r) return;
@@ -2657,7 +2801,6 @@
   `;
         document.getElementById("detailModal").classList.add("active");
       };
-
       window.deleteResult = (id) => {
         if (!confirm("ลบผลการตรวจนี้?")) return;
         results = results.filter((r) => r.id !== id);
@@ -2666,7 +2809,6 @@
         renderDashboard();
         toast("ลบแล้ว", "success");
       };
-
       function exportCSV() {
         if (results.length === 0) {
           toast("ไม่มีข้อมูล", "error");
@@ -2716,7 +2858,6 @@
         URL.revokeObjectURL(url);
         toast("ส่งออก CSV แล้ว", "success");
       }
-
       function printResults() {
         let list = [...results];
         const ef = document.getElementById("resultFilterExam").value;
@@ -2769,8 +2910,6 @@
           pa.innerHTML = "";
         }, 500);
       }
-
-      // ---------- Settings ----------
       function renderSettings() {
         document.getElementById("settingTheme").value = settings.theme;
         document.getElementById("settingResolution").value =
@@ -2828,7 +2967,9 @@
         if (cur) sel.value = cur;
       }
 
-      // ---------- Init ----------
+      // ============================================================
+      // INIT
+      // ============================================================
       function init() {
         exams = loadJSON(LS_KEYS.exams, []);
         results = loadJSON(LS_KEYS.results, []);
@@ -2836,10 +2977,9 @@
           theme: "light",
           resolution: 1920,
           autoProcess: true,
-          threshold: 0.35,
+          threshold: 0.3,
         });
 
-        // Set threshold slider initial
         document.getElementById("thresholdSlider").value = settings.threshold;
         document.getElementById("thresholdVal").textContent =
           settings.threshold.toFixed(2);
@@ -2852,19 +2992,16 @@
         renderSettings();
         refreshResultFilter();
 
-        // Nav
         document.querySelectorAll(".nav-tab").forEach((tab) => {
           tab.addEventListener("click", () =>
             switchSection(tab.dataset.section),
           );
         });
-
-        // Theme
-        document.getElementById("themeToggle").addEventListener("click", () => {
-          applyTheme(settings.theme === "dark" ? "light" : "dark");
-        });
-
-        // Exam modal
+        document
+          .getElementById("themeToggle")
+          .addEventListener("click", () =>
+            applyTheme(settings.theme === "dark" ? "light" : "dark"),
+          );
         document
           .getElementById("btnAddExam")
           .addEventListener("click", () => openExamModal());
@@ -2894,8 +3031,6 @@
         document
           .getElementById("btnSaveExam")
           .addEventListener("click", saveExam);
-
-        // Detail modal
         document
           .getElementById("detailModalClose")
           .addEventListener("click", () =>
@@ -2907,13 +3042,10 @@
             if (e.target.id === "detailModal")
               e.target.classList.remove("active");
           });
-
-        // Exam search
         document
           .getElementById("examSearch")
           .addEventListener("input", renderExamList);
 
-        // Scan
         document
           .getElementById("scanExamSelect")
           .addEventListener("change", onScanExamChange);
@@ -2945,7 +3077,6 @@
           .getElementById("btnCancelReview")
           .addEventListener("click", resetScan);
 
-        // Threshold slider
         const slider = document.getElementById("thresholdSlider");
         slider.addEventListener("input", () => {
           document.getElementById("thresholdVal").textContent = parseFloat(
@@ -2956,19 +3087,10 @@
           settings.threshold = parseFloat(slider.value);
           saveJSON(LS_KEYS.settings, settings);
         });
-
-        // Reprocess with new threshold
         document
           .getElementById("btnReprocess")
-          .addEventListener("click", () => {
-            if (!currentScanImageData) {
-              toast("ไม่มีภาพ", "error");
-              return;
-            }
-            processImage();
-          });
+          .addEventListener("click", processImage);
 
-        // Results
         document
           .getElementById("resultFilterExam")
           .addEventListener("change", renderResults);
@@ -2982,7 +3104,6 @@
           .getElementById("btnPrintResults")
           .addEventListener("click", printResults);
 
-        // Settings
         document
           .getElementById("settingTheme")
           .addEventListener("change", saveSettings);
@@ -2999,12 +3120,10 @@
           .getElementById("btnClearAll")
           .addEventListener("click", clearAll);
 
-        // Stop camera on hide
         document.addEventListener("visibilitychange", () => {
           if (document.hidden && cameraStream) stopCamera();
         });
       }
-
       document.addEventListener("DOMContentLoaded", init);
     </script>
   </body>

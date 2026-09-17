@@ -6,12 +6,11 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
-    <title>ระบบตรวจข้อสอบด้วยกล้อง</title>
+    <title>ระบบตรวจข้อสอบด้วยกล้อง - ZipGrade OMR</title>
     <style>
       :root {
         --primary: #4f46e5;
         --primary-dark: #4338ca;
-        --primary-light: #818cf8;
         --secondary: #0ea5e9;
         --bg: #f1f5f9;
         --card: #ffffff;
@@ -21,10 +20,9 @@
         --success: #10b981;
         --danger: #ef4444;
         --warning: #f59e0b;
-        --shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
-        --shadow-lg:
-          0 10px 15px -3px rgba(0, 0, 0, 0.1),
-          0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --ambiguous: #8b5cf6;
+        --shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         --radius: 12px;
         --radius-sm: 8px;
       }
@@ -34,8 +32,6 @@
         --text: #f1f5f9;
         --text-muted: #94a3b8;
         --border: #334155;
-        --shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
       }
       * {
         margin: 0;
@@ -58,7 +54,6 @@
           background 0.3s,
           color 0.3s;
       }
-      /* Header */
       .header {
         background: linear-gradient(
           135deg,
@@ -101,12 +96,7 @@
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
-        transition: background 0.2s;
       }
-      .theme-toggle:active {
-        background: rgba(255, 255, 255, 0.35);
-      }
-      /* Nav tabs */
       .nav-tabs {
         display: flex;
         background: var(--card);
@@ -135,7 +125,6 @@
         align-items: center;
         gap: 3px;
         border-bottom: 3px solid transparent;
-        transition: all 0.2s;
         white-space: nowrap;
         font-family: inherit;
       }
@@ -147,7 +136,6 @@
         border-bottom-color: var(--primary);
         background: rgba(79, 70, 229, 0.06);
       }
-      /* Main content */
       .main {
         padding: 16px;
         max-width: 900px;
@@ -179,7 +167,6 @@
         align-items: center;
         gap: 8px;
       }
-      /* Cards */
       .card {
         background: var(--card);
         border-radius: var(--radius);
@@ -196,7 +183,6 @@
         align-items: center;
         gap: 8px;
       }
-      /* Stats grid */
       .stats-grid {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
@@ -226,7 +212,6 @@
         color: var(--text-muted);
         margin-top: 2px;
       }
-      /* Buttons */
       .btn {
         display: inline-flex;
         align-items: center;
@@ -238,11 +223,11 @@
         font-size: 0.92rem;
         font-weight: 600;
         cursor: pointer;
-        transition: all 0.15s;
         font-family: inherit;
         background: var(--primary);
         color: #fff;
         line-height: 1.2;
+        transition: all 0.15s;
       }
       .btn:active {
         transform: scale(0.97);
@@ -285,7 +270,6 @@
         flex: 1;
         min-width: 120px;
       }
-      /* Forms */
       .form-group {
         margin-bottom: 14px;
       }
@@ -294,7 +278,6 @@
         font-size: 0.85rem;
         font-weight: 600;
         margin-bottom: 6px;
-        color: var(--text);
       }
       .form-group label .req {
         color: var(--danger);
@@ -308,7 +291,6 @@
         font-family: inherit;
         background: var(--card);
         color: var(--text);
-        transition: border 0.2s;
       }
       .form-control:focus {
         outline: none;
@@ -319,7 +301,6 @@
         grid-template-columns: 1fr 1fr;
         gap: 12px;
       }
-      /* Answer grid */
       .answer-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
@@ -352,16 +333,13 @@
         font-weight: 700;
         font-size: 0.85rem;
         cursor: pointer;
-        transition: all 0.15s;
         font-family: inherit;
       }
       .opt-btn.selected {
         background: var(--primary);
         color: #fff;
         border-color: var(--primary);
-        transform: scale(1.05);
       }
-      /* Exam list */
       .exam-item {
         display: flex;
         justify-content: space-between;
@@ -402,7 +380,6 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: all 0.15s;
         color: var(--text);
       }
       .icon-btn:active {
@@ -411,7 +388,6 @@
       .icon-btn.danger {
         color: var(--danger);
       }
-      /* Modal */
       .modal-overlay {
         display: none;
         position: fixed;
@@ -421,7 +397,6 @@
         justify-content: center;
         align-items: flex-end;
         padding: 0;
-        animation: fadeIn 0.2s;
       }
       .modal-overlay.active {
         display: flex;
@@ -473,10 +448,6 @@
         justify-content: center;
         border-radius: 50%;
       }
-      .modal-close:active {
-        background: var(--bg);
-      }
-      /* Toast */
       .toast-container {
         position: fixed;
         bottom: 20px;
@@ -498,11 +469,7 @@
         box-shadow: var(--shadow-lg);
         font-size: 0.88rem;
         font-weight: 600;
-        animation: toastIn 0.3s ease;
         pointer-events: auto;
-        display: flex;
-        align-items: center;
-        gap: 8px;
       }
       .toast.success {
         background: var(--success);
@@ -516,17 +483,6 @@
         background: var(--warning);
         color: #fff;
       }
-      @keyframes toastIn {
-        from {
-          opacity: 0;
-          transform: translateY(20px);
-        }
-        to {
-          opacity: 1;
-          transform: none;
-        }
-      }
-      /* Camera */
       .camera-container {
         position: relative;
         width: 100%;
@@ -565,10 +521,10 @@
       }
       .camera-frame {
         position: absolute;
-        top: 8%;
-        left: 6%;
-        right: 6%;
-        bottom: 8%;
+        top: 6%;
+        left: 5%;
+        right: 5%;
+        bottom: 6%;
         border: 2px dashed rgba(255, 255, 255, 0.7);
         border-radius: 12px;
       }
@@ -603,7 +559,6 @@
         font-size: 0.8rem;
         text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
       }
-      /* Preview */
       .preview-wrap {
         position: relative;
       }
@@ -611,14 +566,12 @@
         width: 100%;
         border-radius: var(--radius);
         border: 1px solid var(--border);
-        background: #000;
       }
-      /* Loading */
       .loading-overlay {
         display: none;
         position: fixed;
         inset: 0;
-        background: rgba(0, 0, 0, 0.6);
+        background: rgba(0, 0, 0, 0.7);
         z-index: 3000;
         flex-direction: column;
         align-items: center;
@@ -645,8 +598,9 @@
       .loading-text {
         font-size: 0.95rem;
         font-weight: 600;
+        text-align: center;
+        padding: 0 20px;
       }
-      /* Result table */
       .result-table-wrap {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
@@ -656,18 +610,18 @@
         width: 100%;
         border-collapse: collapse;
         font-size: 0.85rem;
-        min-width: 400px;
+        min-width: 360px;
       }
       table.result-table th,
       table.result-table td {
-        padding: 9px 8px;
+        padding: 8px 6px;
         text-align: center;
         border-bottom: 1px solid var(--border);
       }
       table.result-table th {
         background: var(--bg);
         font-weight: 700;
-        font-size: 0.8rem;
+        font-size: 0.78rem;
         color: var(--text-muted);
         position: sticky;
         top: 0;
@@ -705,12 +659,11 @@
       }
       .badge-ambiguous {
         background: rgba(139, 92, 246, 0.15);
-        color: #8b5cf6;
+        color: var(--ambiguous);
       }
-      /* Summary score */
       .score-summary {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(3, 1fr);
         gap: 10px;
         margin-bottom: 14px;
       }
@@ -726,7 +679,7 @@
         font-weight: 800;
       }
       .score-item .score-lbl {
-        font-size: 0.75rem;
+        font-size: 0.72rem;
         color: var(--text-muted);
       }
       .score-item.good .score-val {
@@ -741,7 +694,6 @@
       .score-item.info .score-val {
         color: var(--primary);
       }
-      /* Empty state */
       .empty-state {
         text-align: center;
         padding: 40px 20px;
@@ -755,107 +707,6 @@
       .empty-state p {
         font-size: 0.9rem;
       }
-      /* Answer sheet preview */
-      .answer-sheet {
-        background: #fff;
-        color: #000;
-        padding: 20px;
-        border-radius: var(--radius-sm);
-        border: 1px solid var(--border);
-        font-family: "Segoe UI", sans-serif;
-      }
-      .sheet-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: 14px;
-        border-bottom: 2px solid #000;
-        padding-bottom: 10px;
-        gap: 10px;
-      }
-      .sheet-header .sheet-title {
-        font-size: 1rem;
-        font-weight: 800;
-      }
-      .sheet-header .sheet-sub {
-        font-size: 0.78rem;
-        margin-top: 2px;
-      }
-      .sheet-fields {
-        margin-bottom: 12px;
-        font-size: 0.8rem;
-      }
-      .sheet-fields .field-row {
-        display: flex;
-        gap: 8px;
-        margin-bottom: 6px;
-        align-items: center;
-      }
-      .sheet-fields .field-row span {
-        font-weight: 700;
-        white-space: nowrap;
-      }
-      .sheet-fields .field-line {
-        flex: 1;
-        border-bottom: 1px dotted #666;
-        height: 18px;
-      }
-      .sheet-bubbles {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-        gap: 8px 6px;
-      }
-      .bubble-q {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        font-size: 0.78rem;
-      }
-      .bubble-q .qno {
-        font-weight: 700;
-        width: 22px;
-        text-align: right;
-        flex-shrink: 0;
-      }
-      .bubble-opt {
-        width: 20px;
-        height: 20px;
-        border: 1.5px solid #333;
-        border-radius: 50%;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.62rem;
-        font-weight: 700;
-        flex-shrink: 0;
-      }
-      .corner-mark {
-        position: absolute;
-        width: 14px;
-        height: 14px;
-        background: #000;
-        border-radius: 2px;
-      }
-      .sheet-wrap {
-        position: relative;
-      }
-      .corner-mark.tl {
-        top: 6px;
-        left: 6px;
-      }
-      .corner-mark.tr {
-        top: 6px;
-        right: 6px;
-      }
-      .corner-mark.bl {
-        bottom: 6px;
-        left: 6px;
-      }
-      .corner-mark.br {
-        bottom: 6px;
-        right: 6px;
-      }
-      /* Search */
       .search-box {
         position: relative;
         margin-bottom: 12px;
@@ -871,7 +722,6 @@
         color: var(--text-muted);
         font-size: 1rem;
       }
-      /* Filter row */
       .filter-row {
         display: flex;
         gap: 8px;
@@ -882,45 +732,6 @@
         flex: 1;
         min-width: 140px;
       }
-      /* Responsive */
-      @media (min-width: 640px) {
-        .stats-grid {
-          grid-template-columns: repeat(4, 1fr);
-        }
-        .modal-overlay {
-          align-items: center;
-          padding: 20px;
-        }
-        .modal {
-          border-radius: var(--radius);
-          max-height: 88vh;
-        }
-        .header h1 {
-          font-size: 1.35rem;
-        }
-        .header p {
-          font-size: 0.85rem;
-        }
-      }
-      @media print {
-        body * {
-          visibility: hidden;
-        }
-        #printArea,
-        #printArea * {
-          visibility: visible;
-        }
-        #printArea {
-          position: absolute;
-          left: 0;
-          top: 0;
-          width: 100%;
-        }
-        .no-print {
-          display: none !important;
-        }
-      }
-      /* Utility */
       .hidden {
         display: none !important;
       }
@@ -941,31 +752,124 @@
         justify-content: space-between;
         align-items: center;
       }
-      .gap-2 {
-        gap: 8px;
-      }
       .divider {
         height: 1px;
         background: var(--border);
         margin: 14px 0;
       }
+      /* Debug canvas */
+      .debug-canvas-wrap {
+        position: relative;
+        width: 100%;
+        background: #000;
+        border-radius: var(--radius);
+        overflow: hidden;
+      }
+      .debug-canvas-wrap canvas {
+        width: 100%;
+        display: block;
+      }
+      /* Progress bar */
+      .progress-bar {
+        width: 100%;
+        height: 6px;
+        background: var(--border);
+        border-radius: 3px;
+        overflow: hidden;
+        margin-top: 10px;
+      }
+      .progress-fill {
+        height: 100%;
+        background: var(--primary);
+        transition: width 0.3s;
+      }
+      /* Confidence indicator */
+      .conf-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 6px 10px;
+        border-radius: 6px;
+        margin-bottom: 4px;
+        font-size: 0.82rem;
+        border: 1px solid var(--border);
+      }
+      .conf-row.high {
+        background: rgba(16, 185, 129, 0.08);
+        border-color: rgba(16, 185, 129, 0.3);
+      }
+      .conf-row.medium {
+        background: rgba(245, 158, 11, 0.08);
+        border-color: rgba(245, 158, 11, 0.3);
+      }
+      .conf-row.low {
+        background: rgba(239, 68, 68, 0.08);
+        border-color: rgba(239, 68, 68, 0.3);
+      }
+      .threshold-slider {
+        width: 100%;
+        margin: 8px 0;
+      }
+      @media (min-width: 640px) {
+        .stats-grid {
+          grid-template-columns: repeat(4, 1fr);
+        }
+        .modal-overlay {
+          align-items: center;
+          padding: 20px;
+        }
+        .modal {
+          border-radius: var(--radius);
+          max-height: 88vh;
+        }
+        .header h1 {
+          font-size: 1.35rem;
+        }
+      }
+      @media print {
+        body * {
+          visibility: hidden;
+        }
+        #printArea,
+        #printArea * {
+          visibility: visible;
+        }
+        #printArea {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+          display: block !important;
+        }
+      }
+      .info-box {
+        background: rgba(79, 70, 229, 0.08);
+        border-left: 3px solid var(--primary);
+        padding: 10px 12px;
+        border-radius: 6px;
+        font-size: 0.82rem;
+        margin-bottom: 12px;
+      }
+      .warning-box {
+        background: rgba(245, 158, 11, 0.1);
+        border-left: 3px solid var(--warning);
+        padding: 10px 12px;
+        border-radius: 6px;
+        font-size: 0.82rem;
+        margin-bottom: 12px;
+      }
     </style>
   </head>
   <body>
-    <!-- Header -->
     <header class="header">
       <div class="header-top">
         <div>
           <h1>📷 ระบบตรวจข้อสอบด้วยกล้อง</h1>
-          <p>สร้างชุดข้อสอบ สแกนกระดาษคำตอบ และตรวจคะแนน</p>
+          <p>สแกนกระดาษ ZipGrade • อ่านคำตอบ • เทียบเฉลยอัตโนมัติ</p>
         </div>
-        <button class="theme-toggle" id="themeToggle" title="สลับโหมด">
-          🌙
-        </button>
+        <button class="theme-toggle" id="themeToggle">🌙</button>
       </div>
     </header>
 
-    <!-- Nav tabs -->
     <nav class="nav-tabs" id="navTabs">
       <button class="nav-tab active" data-section="dashboard">
         <span class="icon">📊</span>แดชบอร์ด
@@ -974,7 +878,7 @@
         <span class="icon">📝</span>ชุดข้อสอบ
       </button>
       <button class="nav-tab" data-section="scan">
-        <span class="icon">📷</span>ตรวจด้วยกล้อง
+        <span class="icon">📷</span>สแกนตรวจ
       </button>
       <button class="nav-tab" data-section="results">
         <span class="icon">📋</span>ผลการตรวจ
@@ -985,9 +889,9 @@
     </nav>
 
     <main class="main">
-      <!-- ========== DASHBOARD ========== -->
+      <!-- DASHBOARD -->
       <section class="section active" id="section-dashboard">
-        <div class="stats-grid" id="statsGrid">
+        <div class="stats-grid">
           <div class="stat-card">
             <div class="stat-icon">📝</div>
             <div class="stat-value" id="statExams">0</div>
@@ -1009,23 +913,21 @@
             <div class="stat-label">คะแนนเฉลี่ย</div>
           </div>
         </div>
-
         <div class="card">
           <div class="card-title">📝 ชุดข้อสอบล่าสุด</div>
           <div id="latestExams"></div>
         </div>
-
         <div class="card">
           <div class="card-title">📋 ผลการตรวจล่าสุด</div>
           <div id="latestResults"></div>
         </div>
       </section>
 
-      <!-- ========== EXAMS ========== -->
+      <!-- EXAMS -->
       <section class="section" id="section-exams">
         <div class="flex-between mb-2">
           <h2 class="section-title" style="margin: 0">📝 ชุดข้อสอบ</h2>
-          <button class="btn btn-sm" id="btnAddExam">➕ สร้างชุดข้อสอบ</button>
+          <button class="btn btn-sm" id="btnAddExam">➕ สร้าง</button>
         </div>
         <div class="search-box">
           <span class="search-icon">🔍</span>
@@ -1039,13 +941,13 @@
         <div id="examList"></div>
       </section>
 
-      <!-- ========== SCAN ========== -->
+      <!-- SCAN -->
       <section class="section" id="section-scan">
-        <h2 class="section-title">📷 ตรวจข้อสอบด้วยกล้อง</h2>
+        <h2 class="section-title">📷 สแกนตรวจข้อสอบ</h2>
 
         <div class="card">
           <div class="form-group">
-            <label>เลือกชุดข้อสอบ <span class="req">*</span></label>
+            <label>เลือกชุดข้อสอบ (มีเฉลย) <span class="req">*</span></label>
             <select class="form-control" id="scanExamSelect">
               <option value="">-- เลือกชุดข้อสอบ --</option>
             </select>
@@ -1057,18 +959,21 @@
           ></div>
         </div>
 
-        <!-- Camera area -->
         <div class="card" id="cameraCard">
           <div class="card-title">📸 ถ่ายภาพกระดาษคำตอบ</div>
+          <div class="info-box">
+            💡 วางกระดาษบนพื้นเรียบ แสงสว่างสม่ำเสมอ ถ่ายจากด้านบนให้เห็น
+            <b>จุดดำ 4 มุม</b> ครบ
+          </div>
           <div class="camera-container">
             <video id="cameraVideo" autoplay playsinline muted></video>
             <div class="camera-placeholder" id="cameraPlaceholder">
               <div style="font-size: 2.5rem">📷</div>
-              <p>กดปุ่ม "เปิดกล้อง" เพื่อเริ่ม<br />หรือเลือกภาพจากอุปกรณ์</p>
+              <p>กด "เปิดกล้อง" เพื่อเริ่ม<br />หรือ "เลือกภาพจากเครื่อง"</p>
             </div>
             <div class="camera-overlay" id="cameraOverlay">
               <div class="camera-frame"></div>
-              <div class="camera-hint">วางกระดาษคำตอบให้อยู่ในกรอบ</div>
+              <div class="camera-hint">วางกระดาษให้อยู่ในกรอบ</div>
             </div>
           </div>
           <div class="btn-row mt-2">
@@ -1088,21 +993,57 @@
           <input type="file" id="fileInput" accept="image/*" class="hidden" />
         </div>
 
-        <!-- Preview & process -->
         <div class="card hidden" id="previewCard">
-          <div class="card-title">🖼️ ตัวอย่างภาพ</div>
+          <div class="card-title">🖼️ ภาพที่ถ่าย</div>
           <div class="preview-wrap">
-            <img id="previewImg" class="preview-img" alt="ตัวอย่างภาพ" />
+            <img id="previewImg" class="preview-img" alt="ตัวอย่าง" />
           </div>
           <div class="btn-row mt-2">
             <button class="btn btn-success" id="btnProcess">
-              🔍 ประมวลผลอ่านคำตอบ
+              🔍 อ่านคำตอบ
             </button>
             <button class="btn btn-outline" id="btnRetake">🔄 สแกนใหม่</button>
           </div>
         </div>
 
-        <!-- Result review -->
+        <!-- Debug overlay -->
+        <div class="card hidden" id="debugCard">
+          <div class="card-title">🔬 ตรวจสอบการอ่าน (Debug)</div>
+          <div class="info-box" style="font-size: 0.78rem">
+            วงกลม <span style="color: #10b981; font-weight: 700">เขียว</span> =
+            อ่านได้ชัด,
+            <span style="color: #f59e0b; font-weight: 700">เหลือง</span> =
+            ไม่แน่ใจ,
+            <span style="color: #ef4444; font-weight: 700">แดง</span> =
+            กำกวม/อ่านไม่ได้
+          </div>
+          <div class="debug-canvas-wrap">
+            <canvas id="debugCanvas"></canvas>
+          </div>
+          <div class="mt-2">
+            <label style="font-size: 0.82rem; font-weight: 600"
+              >ปรับความไวการอ่าน (Threshold):
+              <span id="thresholdVal">0.35</span></label
+            >
+            <input
+              type="range"
+              class="threshold-slider"
+              id="thresholdSlider"
+              min="0.15"
+              max="0.70"
+              step="0.01"
+              value="0.35"
+            />
+          </div>
+          <div id="confidenceList" class="mt-2"></div>
+          <div class="btn-row mt-2">
+            <button class="btn btn-warning" id="btnReprocess">
+              🔄 อ่านใหม่ด้วยค่าใหม่
+            </button>
+          </div>
+        </div>
+
+        <!-- Review -->
         <div class="card hidden" id="reviewCard">
           <div class="card-title">✅ ตรวจสอบคำตอบ</div>
           <div class="form-row">
@@ -1130,7 +1071,7 @@
               <thead>
                 <tr>
                   <th>ข้อ</th>
-                  <th>คำตอบ</th>
+                  <th>อ่านได้</th>
                   <th>เฉลย</th>
                   <th>ผล</th>
                 </tr>
@@ -1140,13 +1081,12 @@
           </div>
           <div class="btn-row mt-2">
             <button class="btn btn-success" id="btnConfirmSave">
-              💾 ยืนยันบันทึกผล
+              💾 บันทึกผล
             </button>
             <button class="btn btn-outline" id="btnCancelReview">ยกเลิก</button>
           </div>
         </div>
 
-        <!-- Score display -->
         <div class="card hidden" id="scoreCard">
           <div class="card-title">🏆 ผลคะแนน</div>
           <div class="score-summary" id="scoreSummary"></div>
@@ -1154,7 +1094,7 @@
         </div>
       </section>
 
-      <!-- ========== RESULTS ========== -->
+      <!-- RESULTS -->
       <section class="section" id="section-results">
         <h2 class="section-title">📋 ผลการตรวจ</h2>
         <div class="filter-row">
@@ -1179,10 +1119,9 @@
         <div id="resultList"></div>
       </section>
 
-      <!-- ========== SETTINGS ========== -->
+      <!-- SETTINGS -->
       <section class="section" id="section-settings">
         <h2 class="section-title">⚙️ ตั้งค่า</h2>
-
         <div class="card">
           <div class="card-title">🎨 รูปแบบ</div>
           <div class="form-group">
@@ -1193,7 +1132,6 @@
             </select>
           </div>
         </div>
-
         <div class="card">
           <div class="card-title">📷 กล้อง</div>
           <div class="form-group">
@@ -1211,31 +1149,29 @@
             </label>
           </div>
         </div>
-
         <div class="card">
           <div class="card-title">💾 ข้อมูล</div>
           <div class="btn-row">
             <button class="btn btn-outline" id="btnExportAll">
-              📤 ส่งออกข้อมูลทั้งหมด (JSON)
+              📤 ส่งออก (JSON)
             </button>
             <button class="btn btn-danger" id="btnClearAll">
-              🗑️ ล้างข้อมูลทั้งหมด
+              🗑️ ล้างทั้งหมด
             </button>
           </div>
         </div>
-
         <div class="card">
           <div class="card-title">ℹ️ เกี่ยวกับ</div>
           <p class="text-muted" style="font-size: 0.85rem">
-            ระบบตรวจข้อสอบด้วยกล้อง v1.0<br />
-            ทำงานแบบหน้าเดียว (SPA) บันทึกข้อมูลใน LocalStorage<br />
-            รองรับ Android, iPhone และคอมพิวเตอร์
+            ระบบตรวจข้อสอบ OMR v2.0<br />
+            รองรับกระดาษ ZipGrade (20 ข้อ 5 ตัวเลือก 2 คอลัมน์)<br />
+            ใช้ Corner Detection + Perspective Correction + Otsu Threshold
           </p>
         </div>
       </section>
     </main>
 
-    <!-- Modal for exam form -->
+    <!-- Exam Modal -->
     <div class="modal-overlay" id="examModal">
       <div class="modal">
         <div class="modal-header">
@@ -1248,7 +1184,7 @@
             type="text"
             class="form-control"
             id="fExamName"
-            placeholder="เช่น สอบกลางภาค คณิตศาสตร์"
+            placeholder="เช่น สอบกลางภาค"
           />
         </div>
         <div class="form-row">
@@ -1300,7 +1236,7 @@
               type="number"
               class="form-control"
               id="fExamQuestions"
-              value="10"
+              value="20"
               min="1"
               max="100"
             />
@@ -1308,8 +1244,8 @@
           <div class="form-group">
             <label>จำนวนตัวเลือก</label>
             <select class="form-control" id="fExamChoices">
-              <option value="4">4 ตัวเลือก (ก ข ค ง)</option>
-              <option value="5">5 ตัวเลือก (ก ข ค ง จ)</option>
+              <option value="4">4 ตัวเลือก</option>
+              <option value="5" selected>5 ตัวเลือก</option>
             </select>
           </div>
         </div>
@@ -1329,30 +1265,14 @@
       </div>
     </div>
 
-    <!-- Modal for exam detail -->
+    <!-- Detail Modal -->
     <div class="modal-overlay" id="detailModal">
       <div class="modal">
         <div class="modal-header">
-          <h3 id="detailModalTitle">รายละเอียดชุดข้อสอบ</h3>
+          <h3 id="detailModalTitle">รายละเอียด</h3>
           <button class="modal-close" id="detailModalClose">×</button>
         </div>
         <div id="detailModalBody"></div>
-      </div>
-    </div>
-
-    <!-- Modal for answer sheet print -->
-    <div class="modal-overlay" id="printModal">
-      <div class="modal">
-        <div class="modal-header">
-          <h3>🖨️ ตัวอย่างกระดาษคำตอบ</h3>
-          <button class="modal-close" id="printModalClose">×</button>
-        </div>
-        <div id="printPreviewContainer"></div>
-        <div class="btn-row mt-2 no-print">
-          <button class="btn btn-success btn-block" id="btnDoPrint">
-            🖨️ พิมพ์กระดาษคำตอบ
-          </button>
-        </div>
       </div>
     </div>
 
@@ -1362,39 +1282,47 @@
       <div class="loading-text" id="loadingText">กำลังประมวลผล...</div>
     </div>
 
-    <!-- Toast -->
     <div class="toast-container" id="toastContainer"></div>
-
-    <!-- Hidden print area -->
     <div id="printArea" style="display: none"></div>
 
     <script>
       /* ============================================================
-   ระบบตรวจข้อสอบด้วยกล้อง - Single Page Application
+   OMR System v2 - ZipGrade Form Reader
    ============================================================ */
 
-      // ---------- Constants ----------
       const LS_KEYS = {
-        exams: "omr_exams",
-        results: "omr_results",
-        settings: "omr_settings",
+        exams: "omr_exams_v2",
+        results: "omr_results_v2",
+        settings: "omr_settings_v2",
       };
-      const CHOICE_LABELS = ["ก", "ข", "ค", "ง", "จ"];
+      const CHOICE_LABELS = ["1", "2", "3", "4", "5"];
+      const NUM_QUESTIONS = 20;
+      const NUM_CHOICES = 5;
+      const NUM_COLUMNS = 2; // 2 columns (left: 1-10, right: 11-20)
+      const ROWS_PER_COLUMN = 10;
 
-      // ---------- State ----------
       let exams = [];
       let results = [];
-      let settings = { theme: "light", resolution: 1920, autoProcess: true };
+      let settings = {
+        theme: "light",
+        resolution: 1920,
+        autoProcess: true,
+        threshold: 0.35,
+      };
       let editingExamId = null;
-      let currentAnswerGrid = []; // array of selected index (0-4) or -1
-      let currentExamForGrid = null;
+      let currentAnswerGrid = [];
       let currentScanExam = null;
       let currentScanAnswers = [];
       let currentScanImageData = null;
+      let currentScanImageEl = null; // HTMLImageElement
       let cameraStream = null;
       let facingMode = "environment";
-      let processingCanvas = document.createElement("canvas");
-      let lastScanResult = null;
+      let lastOMRResult = null;
+
+      // Canvas for processing
+      const workCanvas = document.createElement("canvas");
+      const workCtx = workCanvas.getContext("2d", { willReadFrequently: true });
+      const debugCanvas = document.getElementById("debugCanvas");
 
       // ---------- Utils ----------
       function uid() {
@@ -1409,9 +1337,9 @@
         const pad = (n) => String(n).padStart(2, "0");
         return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
       }
-      function escapeHtml(str) {
-        if (str == null) return "";
-        return String(str).replace(
+      function escapeHtml(s) {
+        if (s == null) return "";
+        return String(s).replace(
           /[&<>"']/g,
           (m) =>
             ({
@@ -1423,37 +1351,36 @@
             })[m],
         );
       }
-      function loadJSON(key, fallback) {
+      function loadJSON(k, fb) {
         try {
-          const raw = localStorage.getItem(key);
-          return raw ? JSON.parse(raw) : fallback;
+          const r = localStorage.getItem(k);
+          return r ? JSON.parse(r) : fb;
         } catch (e) {
-          return fallback;
+          return fb;
         }
       }
-      function saveJSON(key, val) {
+      function saveJSON(k, v) {
         try {
-          localStorage.setItem(key, JSON.stringify(val));
+          localStorage.setItem(k, JSON.stringify(v));
         } catch (e) {
-          toast("ไม่สามารถบันทึกข้อมูลได้", "error");
+          toast("บันทึกไม่ได้", "error");
         }
       }
 
-      function toast(msg, type = "info", duration = 2500) {
-        const container = document.getElementById("toastContainer");
+      function toast(msg, type = "info", dur = 2500) {
+        const c = document.getElementById("toastContainer");
         const el = document.createElement("div");
         el.className = "toast " + (type !== "info" ? type : "");
         el.textContent = msg;
-        container.appendChild(el);
+        c.appendChild(el);
         setTimeout(() => {
           el.style.opacity = "0";
           el.style.transition = "opacity 0.3s";
           setTimeout(() => el.remove(), 300);
-        }, duration);
+        }, dur);
       }
-
-      function showLoading(text = "กำลังประมวลผล...") {
-        document.getElementById("loadingText").textContent = text;
+      function showLoading(t = "กำลังประมวลผล...") {
+        document.getElementById("loadingText").textContent = t;
         document.getElementById("loadingOverlay").classList.add("active");
       }
       function hideLoading() {
@@ -1468,9 +1395,9 @@
         document
           .querySelectorAll(".nav-tab")
           .forEach((t) => t.classList.remove("active"));
-        const section = document.getElementById("section-" + name);
+        const sec = document.getElementById("section-" + name);
         const tab = document.querySelector(`.nav-tab[data-section="${name}"]`);
-        if (section) section.classList.add("active");
+        if (sec) sec.classList.add("active");
         if (tab) tab.classList.add("active");
         window.scrollTo({ top: 0, behavior: "smooth" });
         if (name === "dashboard") renderDashboard();
@@ -1495,13 +1422,12 @@
       function renderDashboard() {
         document.getElementById("statExams").textContent = exams.length;
         document.getElementById("statScans").textContent = results.length;
-        const uniqueStudents = new Set(
+        const uniq = new Set(
           results
             .map((r) => (r.studentName || "") + "|" + (r.studentId || ""))
             .filter((s) => s !== "|"),
         );
-        document.getElementById("statStudents").textContent =
-          uniqueStudents.size;
+        document.getElementById("statStudents").textContent = uniq.size;
         const avg = results.length
           ? (
               results.reduce((s, r) => s + (r.score || 0), 0) / results.length
@@ -1509,63 +1435,59 @@
           : "0";
         document.getElementById("statAvg").textContent = avg;
 
-        const latestExamsEl = document.getElementById("latestExams");
-        const sortedExams = [...exams]
+        const le = document.getElementById("latestExams");
+        const sortedE = [...exams]
           .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
           .slice(0, 3);
-        if (sortedExams.length === 0) {
-          latestExamsEl.innerHTML =
-            '<div class="empty-state"><div class="icon">📝</div><p>ยังไม่มีชุดข้อสอบ</p></div>';
-        } else {
-          latestExamsEl.innerHTML = sortedExams
-            .map(
-              (e) =>
-                `<div class="exam-item">
+        le.innerHTML =
+          sortedE.length === 0
+            ? '<div class="empty-state"><div class="icon">📝</div><p>ยังไม่มีชุดข้อสอบ</p></div>'
+            : sortedE
+                .map(
+                  (e) => `<div class="exam-item">
         <div class="exam-info">
           <div class="exam-name">${escapeHtml(e.name)}</div>
           <div class="exam-meta">${e.questions} ข้อ • ${e.choices} ตัวเลือก • ${e.pointsPerQuestion} คะแนน/ข้อ</div>
         </div>
         <div class="exam-actions">
-          <button class="icon-btn" onclick="goToScanWithExam('${e.id}')" title="ตรวจ">📷</button>
+          <button class="icon-btn" onclick="goToScanWithExam('${e.id}')" title="สแกน">📷</button>
         </div>
       </div>`,
-            )
-            .join("");
-        }
+                )
+                .join("");
 
-        const latestResultsEl = document.getElementById("latestResults");
-        const sortedResults = [...results]
+        const lr = document.getElementById("latestResults");
+        const sortedR = [...results]
           .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
           .slice(0, 5);
-        if (sortedResults.length === 0) {
-          latestResultsEl.innerHTML =
-            '<div class="empty-state"><div class="icon">📋</div><p>ยังไม่มีผลการตรวจ</p></div>';
-        } else {
-          latestResultsEl.innerHTML = sortedResults
-            .map((r) => {
-              const exam = exams.find((e) => e.id === r.examId);
-              const pct =
-                r.totalPossible > 0
-                  ? ((r.score / r.totalPossible) * 100).toFixed(1)
-                  : "0";
-              return `<div class="exam-item">
-        <div class="exam-info">
-          <div class="exam-name">${escapeHtml(r.studentName || "ไม่ระบุชื่อ")}</div>
-          <div class="exam-meta">${escapeHtml(exam ? exam.name : "ไม่ทราบชุด")} • ${r.score}/${r.totalPossible} (${pct}%)</div>
-        </div>
-        <div class="exam-actions">
-          <span class="badge ${r.score >= r.totalPossible * 0.5 ? "badge-correct" : "badge-wrong"}">${pct}%</span>
-        </div>
-      </div>`;
-            })
-            .join("");
-        }
+        lr.innerHTML =
+          sortedR.length === 0
+            ? '<div class="empty-state"><div class="icon">📋</div><p>ยังไม่มีผลการตรวจ</p></div>'
+            : sortedR
+                .map((r) => {
+                  const pct =
+                    r.totalPossible > 0
+                      ? ((r.score / r.totalPossible) * 100).toFixed(1)
+                      : "0";
+                  const cls =
+                    r.score >= r.totalPossible * 0.5
+                      ? "badge-correct"
+                      : "badge-wrong";
+                  return `<div class="exam-item">
+          <div class="exam-info">
+            <div class="exam-name">${escapeHtml(r.studentName || "ไม่ระบุ")}</div>
+            <div class="exam-meta">${escapeHtml(r.examName)} • ${r.score}/${r.totalPossible} (${pct}%)</div>
+          </div>
+          <span class="badge ${cls}">${pct}%</span>
+        </div>`;
+                })
+                .join("");
       }
 
-      window.goToScanWithExam = function (examId) {
+      window.goToScanWithExam = function (id) {
         switchSection("scan");
         const sel = document.getElementById("scanExamSelect");
-        sel.value = examId;
+        sel.value = id;
         onScanExamChange();
       };
 
@@ -1575,19 +1497,18 @@
           .getElementById("examSearch")
           .value.trim()
           .toLowerCase();
-        const list = exams.filter((e) => {
-          if (!q) return true;
-          return (e.name + " " + e.subject + " " + e.code + " " + e.level)
-            .toLowerCase()
-            .includes(q);
-        });
-        const container = document.getElementById("examList");
+        const list = exams.filter(
+          (e) =>
+            !q ||
+            (e.name + e.subject + e.code + e.level).toLowerCase().includes(q),
+        );
+        const c = document.getElementById("examList");
         if (list.length === 0) {
-          container.innerHTML =
-            '<div class="empty-state"><div class="icon">📝</div><p>ยังไม่มีชุดข้อสอบ<br>กด "สร้างชุดข้อสอบ" เพื่อเริ่มต้น</p></div>';
+          c.innerHTML =
+            '<div class="empty-state"><div class="icon">📝</div><p>ยังไม่มีชุดข้อสอบ</p></div>';
           return;
         }
-        container.innerHTML = list
+        c.innerHTML = list
           .map(
             (e) => `
     <div class="exam-item">
@@ -1595,15 +1516,13 @@
         <div class="exam-name">${escapeHtml(e.name)}</div>
         <div class="exam-meta">
           ${escapeHtml(e.subject || "-")} ${e.code ? "• " + escapeHtml(e.code) : ""} ${e.level ? "• " + escapeHtml(e.level) : ""}<br>
-          ${e.questions} ข้อ • ${e.choices} ตัวเลือก • ${e.pointsPerQuestion} คะแนน/ข้อ • รวม ${(e.questions * e.pointsPerQuestion).toFixed(1)} คะแนน
+          ${e.questions} ข้อ • ${e.choices} ตัวเลือก • ${e.pointsPerQuestion} คะแนน/ข้อ • รวม ${(e.questions * e.pointsPerQuestion).toFixed(1)}
         </div>
       </div>
       <div class="exam-actions">
         <button class="icon-btn" onclick="editExam('${e.id}')" title="แก้ไข">✏️</button>
-        <button class="icon-btn" onclick="copyExam('${e.id}')" title="คัดลอก">📋</button>
-        <button class="icon-btn" onclick="showExamDetail('${e.id}')" title="รายละเอียด">ℹ️</button>
-        <button class="icon-btn" onclick="printAnswerSheet('${e.id}')" title="กระดาษคำตอบ">🖨️</button>
-        <button class="icon-btn" onclick="goToScanWithExam('${e.id}')" title="ตรวจ">📷</button>
+        <button class="icon-btn" onclick="showExamDetail('${e.id}')" title="ดู">ℹ️</button>
+        <button class="icon-btn" onclick="goToScanWithExam('${e.id}')" title="สแกน">📷</button>
         <button class="icon-btn danger" onclick="deleteExam('${e.id}')" title="ลบ">🗑️</button>
       </div>
     </div>
@@ -1628,28 +1547,24 @@
           : 1;
         document.getElementById("fExamQuestions").value = exam
           ? exam.questions
-          : 10;
-        document.getElementById("fExamChoices").value = exam ? exam.choices : 4;
-        const qCount = exam ? exam.questions : 10;
-        const choices = exam ? exam.choices : 4;
+          : 20;
+        document.getElementById("fExamChoices").value = exam ? exam.choices : 5;
+        const qCount = exam ? exam.questions : 20;
         currentAnswerGrid = exam
           ? [...exam.answerKey]
           : new Array(qCount).fill(-1);
-        currentExamForGrid = { questions: qCount, choices };
         renderAnswerGrid();
         document.getElementById("examModal").classList.add("active");
       }
-
       function closeExamModal() {
         document.getElementById("examModal").classList.remove("active");
         editingExamId = null;
       }
-
       function renderAnswerGrid() {
         const qCount =
           parseInt(document.getElementById("fExamQuestions").value) || 1;
         const choices =
-          parseInt(document.getElementById("fExamChoices").value) || 4;
+          parseInt(document.getElementById("fExamChoices").value) || 5;
         if (currentAnswerGrid.length !== qCount) {
           const old = currentAnswerGrid;
           currentAnswerGrid = new Array(qCount).fill(-1);
@@ -1661,23 +1576,22 @@
         for (let i = 0; i < qCount; i++) {
           const item = document.createElement("div");
           item.className = "answer-item";
-          let optsHtml = "";
+          let opts = "";
           for (let c = 0; c < choices; c++) {
-            optsHtml += `<button type="button" class="opt-btn ${currentAnswerGrid[i] === c ? "selected" : ""}" data-q="${i}" data-c="${c}">${CHOICE_LABELS[c]}</button>`;
+            opts += `<button type="button" class="opt-btn ${currentAnswerGrid[i] === c ? "selected" : ""}" data-q="${i}" data-c="${c}">${CHOICE_LABELS[c]}</button>`;
           }
-          item.innerHTML = `<div class="q-num">ข้อ ${i + 1}</div><div class="answer-options">${optsHtml}</div>`;
+          item.innerHTML = `<div class="q-num">ข้อ ${i + 1}</div><div class="answer-options">${opts}</div>`;
           grid.appendChild(item);
         }
         grid.querySelectorAll(".opt-btn").forEach((btn) => {
           btn.addEventListener("click", () => {
-            const qi = parseInt(btn.dataset.q);
-            const ci = parseInt(btn.dataset.c);
+            const qi = parseInt(btn.dataset.q),
+              ci = parseInt(btn.dataset.c);
             currentAnswerGrid[qi] = currentAnswerGrid[qi] === ci ? -1 : ci;
             renderAnswerGrid();
           });
         });
       }
-
       function saveExam() {
         const name = document.getElementById("fExamName").value.trim();
         if (!name) {
@@ -1691,10 +1605,9 @@
         const points =
           parseFloat(document.getElementById("fExamPoints").value) || 1;
         if (qCount < 1 || qCount > 100) {
-          toast("จำนวนข้อต้องอยู่ระหว่าง 1-100", "error");
+          toast("จำนวนข้อ 1-100", "error");
           return;
         }
-        // Check all answers set
         const missing = currentAnswerGrid.findIndex((a) => a < 0);
         if (missing !== -1) {
           toast(`กรุณากำหนดเฉลยข้อ ${missing + 1}`, "error");
@@ -1719,7 +1632,7 @@
             data.createdAt = exams[idx].createdAt;
             exams[idx] = data;
           }
-          toast("อัปเดตชุดข้อสอบแล้ว", "success");
+          toast("อัปเดตแล้ว", "success");
         } else {
           data.id = uid();
           exams.push(data);
@@ -1729,44 +1642,31 @@
         closeExamModal();
         renderExamList();
         renderDashboard();
+        refreshResultFilter();
+        renderScanSelect();
       }
-
-      window.editExam = function (id) {
+      window.editExam = (id) => {
         const e = exams.find((x) => x.id === id);
         if (e) openExamModal(e);
       };
-      window.copyExam = function (id) {
-        const e = exams.find((x) => x.id === id);
-        if (!e) return;
-        const copy = JSON.parse(JSON.stringify(e));
-        copy.id = uid();
-        copy.name = e.name + " (คัดลอก)";
-        copy.createdAt = nowISO();
-        copy.updatedAt = nowISO();
-        exams.push(copy);
-        saveJSON(LS_KEYS.exams, exams);
-        renderExamList();
-        renderDashboard();
-        toast("คัดลอกชุดข้อสอบแล้ว", "success");
-      };
-      window.deleteExam = function (id) {
-        if (!confirm("ต้องการลบชุดข้อสอบนี้ใช่หรือไม่?")) return;
+      window.deleteExam = (id) => {
+        if (!confirm("ลบชุดข้อสอบนี้?")) return;
         exams = exams.filter((e) => e.id !== id);
         saveJSON(LS_KEYS.exams, exams);
         renderExamList();
         renderDashboard();
-        toast("ลบชุดข้อสอบแล้ว", "success");
+        refreshResultFilter();
+        renderScanSelect();
+        toast("ลบแล้ว", "success");
       };
-
-      window.showExamDetail = function (id) {
+      window.showExamDetail = (id) => {
         const e = exams.find((x) => x.id === id);
         if (!e) return;
         document.getElementById("detailModalTitle").textContent = e.name;
-        let answerRows = "";
+        let rows = "";
         for (let i = 0; i < e.questions; i++) {
-          answerRows += `<span style="display:inline-block;background:var(--bg);border-radius:6px;padding:4px 10px;margin:3px;font-size:0.82rem;border:1px solid var(--border);">
-      <b>${i + 1}</b>: ${CHOICE_LABELS[e.answerKey[i]]}
-    </span>`;
+          rows += `<span style="display:inline-block;background:var(--bg);border-radius:6px;padding:4px 10px;margin:3px;font-size:0.82rem;border:1px solid var(--border);">
+      <b>${i + 1}</b>: ${CHOICE_LABELS[e.answerKey[i]]}</span>`;
         }
         document.getElementById("detailModalBody").innerHTML = `
     <div class="form-group"><label>รายวิชา</label><div>${escapeHtml(e.subject || "-")}</div></div>
@@ -1775,81 +1675,19 @@
       <div class="form-group"><label>ระดับชั้น</label><div>${escapeHtml(e.level || "-")}</div></div>
     </div>
     <div class="form-row">
-      <div class="form-group"><label>จำนวนข้อ</label><div>${e.questions} ข้อ</div></div>
-      <div class="form-group"><label>ตัวเลือก</label><div>${e.choices} ตัวเลือก</div></div>
+      <div class="form-group"><label>จำนวนข้อ</label><div>${e.questions}</div></div>
+      <div class="form-group"><label>ตัวเลือก</label><div>${e.choices}</div></div>
     </div>
-    <div class="form-group"><label>คะแนนต่อข้อ</label><div>${e.pointsPerQuestion} คะแนน</div></div>
-    <div class="form-group"><label>คะแนนเต็ม</label><div>${(e.questions * e.pointsPerQuestion).toFixed(1)} คะแนน</div></div>
-    <div class="form-group"><label>เฉลย</label><div>${answerRows}</div></div>
-    <div class="btn-row mt-2">
-      <button class="btn btn-outline" onclick="printAnswerSheet('${e.id}');document.getElementById('detailModal').classList.remove('active');">🖨️ สร้างกระดาษคำตอบ</button>
-      <button class="btn" onclick="editExam('${e.id}');document.getElementById('detailModal').classList.remove('active');">✏️ แก้ไข</button>
-    </div>
+    <div class="form-group"><label>คะแนนเต็ม</label><div>${(e.questions * e.pointsPerQuestion).toFixed(1)}</div></div>
+    <div class="form-group"><label>เฉลย</label><div>${rows}</div></div>
   `;
         document.getElementById("detailModal").classList.add("active");
       };
 
-      // ---------- Answer Sheet ----------
-      window.printAnswerSheet = function (id) {
-        const e = exams.find((x) => x.id === id);
-        if (!e) return;
-        const choices = e.choices;
-        let bubblesHtml = "";
-        for (let i = 0; i < e.questions; i++) {
-          let opts = "";
-          for (let c = 0; c < choices; c++) {
-            opts += `<span class="bubble-opt">${CHOICE_LABELS[c]}</span>`;
-          }
-          bubblesHtml += `<div class="bubble-q"><span class="qno">${i + 1}.</span>${opts}</div>`;
-        }
-        const html = `
-    <div class="sheet-wrap answer-sheet" id="sheetContent">
-      <div class="corner-mark tl"></div>
-      <div class="corner-mark tr"></div>
-      <div class="corner-mark bl"></div>
-      <div class="corner-mark br"></div>
-      <div class="sheet-header">
-        <div>
-          <div class="sheet-title">${escapeHtml(e.name)}</div>
-          <div class="sheet-sub">${escapeHtml(e.subject || "")} ${e.code ? "• " + escapeHtml(e.code) : ""} ${e.level ? "• " + escapeHtml(e.level) : ""}</div>
-          <div class="sheet-sub">${e.questions} ข้อ • ${e.choices} ตัวเลือก • ${(e.questions * e.pointsPerQuestion).toFixed(1)} คะแนน</div>
-        </div>
-        <div style="text-align:right;font-size:0.7rem;">
-          <div>คะแนน</div>
-          <div style="border:2px solid #000;width:50px;height:30px;border-radius:4px;"></div>
-        </div>
-      </div>
-      <div class="sheet-fields">
-        <div class="field-row"><span>ชื่อ-นามสกุล:</span><div class="field-line"></div></div>
-        <div class="field-row"><span>รหัสนักเรียน:</span><div class="field-line" style="max-width:150px;"></div></div>
-        <div class="field-row"><span>ห้อง:</span><div class="field-line" style="max-width:80px;"></div><span>เลขที่:</span><div class="field-line" style="max-width:80px;"></div></div>
-      </div>
-      <div class="sheet-bubbles">${bubblesHtml}</div>
-      <div style="text-align:center;margin-top:10px;font-size:0.65rem;color:#666;">
-        ○ ระบายให้เต็มวง ● ห้ามเกิน 1 ข้อ
-      </div>
-    </div>
-  `;
-        document.getElementById("printPreviewContainer").innerHTML = html;
-        document.getElementById("printModal").classList.add("active");
-      };
-
-      function doPrint() {
-        const content = document.getElementById("sheetContent").outerHTML;
-        const printArea = document.getElementById("printArea");
-        printArea.innerHTML = content;
-        printArea.style.display = "block";
-        window.print();
-        setTimeout(() => {
-          printArea.style.display = "none";
-          printArea.innerHTML = "";
-        }, 500);
-      }
-
       // ---------- Scan ----------
       function renderScanSelect() {
         const sel = document.getElementById("scanExamSelect");
-        const current = sel.value;
+        const cur = sel.value;
         sel.innerHTML =
           '<option value="">-- เลือกชุดข้อสอบ --</option>' +
           exams
@@ -1858,10 +1696,9 @@
                 `<option value="${e.id}">${escapeHtml(e.name)} (${e.questions} ข้อ)</option>`,
             )
             .join("");
-        if (current) sel.value = current;
+        if (cur) sel.value = cur;
         onScanExamChange();
       }
-
       function onScanExamChange() {
         const id = document.getElementById("scanExamSelect").value;
         const info = document.getElementById("scanExamInfo");
@@ -1870,7 +1707,7 @@
           info.textContent = "";
           return;
         }
-        info.innerHTML = `📝 ${escapeHtml(currentScanExam.name)} • ${currentScanExam.questions} ข้อ • คะแนนเต็ม ${(currentScanExam.questions * currentScanExam.pointsPerQuestion).toFixed(1)} คะแนน`;
+        info.innerHTML = `📝 ${escapeHtml(currentScanExam.name)} • ${currentScanExam.questions} ข้อ • คะแนนเต็ม ${(currentScanExam.questions * currentScanExam.pointsPerQuestion).toFixed(1)}`;
       }
 
       async function openCamera() {
@@ -1878,7 +1715,7 @@
           if (cameraStream) stopCamera();
           const constraints = {
             video: {
-              facingMode: facingMode,
+              facingMode,
               width: { ideal: settings.resolution },
               height: { ideal: settings.resolution },
             },
@@ -1892,38 +1729,35 @@
           document.getElementById("cameraOverlay").classList.add("active");
           document.getElementById("btnCapture").disabled = false;
           document.getElementById("btnSwitchCamera").disabled = false;
-          document.getElementById("btnOpenCamera").textContent = "🔴 ปิดกล้อง";
-          document.getElementById("btnOpenCamera").onclick = closeCamera;
+          const btn = document.getElementById("btnOpenCamera");
+          btn.textContent = "🔴 ปิดกล้อง";
+          btn.onclick = closeCamera;
           toast("เปิดกล้องแล้ว", "success");
         } catch (err) {
           console.error(err);
-          toast("ไม่สามารถเปิดกล้องได้ กรุณาเลือกภาพจากอุปกรณ์", "error");
-          document.getElementById("btnPickImage").focus();
+          toast('เปิดกล้องไม่ได้ — ใช้ปุ่ม "เลือกภาพ" แทน', "error", 4000);
         }
       }
-
       function stopCamera() {
         if (cameraStream) {
           cameraStream.getTracks().forEach((t) => t.stop());
           cameraStream = null;
         }
-        const video = document.getElementById("cameraVideo");
-        video.srcObject = null;
-        video.classList.remove("active");
+        const v = document.getElementById("cameraVideo");
+        v.srcObject = null;
+        v.classList.remove("active");
         document.getElementById("cameraPlaceholder").style.display = "block";
         document.getElementById("cameraOverlay").classList.remove("active");
         document.getElementById("btnCapture").disabled = true;
         document.getElementById("btnSwitchCamera").disabled = true;
-        const btn = document.getElementById("btnOpenCamera");
-        btn.textContent = "📷 เปิดกล้อง";
-        btn.onclick = openCamera;
+        const b = document.getElementById("btnOpenCamera");
+        b.textContent = "📷 เปิดกล้อง";
+        b.onclick = openCamera;
       }
-
       function closeCamera() {
         stopCamera();
-        toast("ปิดกล้องแล้ว");
+        toast("ปิดกล้อง");
       }
-
       function switchCamera() {
         facingMode = facingMode === "environment" ? "user" : "environment";
         if (cameraStream) openCamera();
@@ -1935,252 +1769,333 @@
           toast("กล้องยังไม่พร้อม", "error");
           return;
         }
-        const canvas = processingCanvas;
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(video, 0, 0);
-        const dataUrl = canvas.toDataURL("image/jpeg", 0.92);
+        const c = document.createElement("canvas");
+        c.width = video.videoWidth;
+        c.height = video.videoHeight;
+        c.getContext("2d").drawImage(video, 0, 0);
+        const dataUrl = c.toDataURL("image/jpeg", 0.92);
         showPreview(dataUrl);
-        if (settings.autoProcess) {
-          setTimeout(() => processImage(), 300);
-        }
+        if (settings.autoProcess) setTimeout(() => processImage(), 400);
       }
-
       function showPreview(dataUrl) {
         currentScanImageData = dataUrl;
         document.getElementById("previewImg").src = dataUrl;
         document.getElementById("previewCard").classList.remove("hidden");
+        document.getElementById("debugCard").classList.add("hidden");
         document.getElementById("reviewCard").classList.add("hidden");
         document.getElementById("scoreCard").classList.add("hidden");
       }
-
       function pickImage() {
         document.getElementById("fileInput").click();
       }
-
       function handleFileSelect(e) {
-        const file = e.target.files[0];
-        if (!file) return;
+        const f = e.target.files[0];
+        if (!f) return;
         const reader = new FileReader();
         reader.onload = (ev) => {
           showPreview(ev.target.result);
-          if (settings.autoProcess) setTimeout(() => processImage(), 300);
+          if (settings.autoProcess) setTimeout(() => processImage(), 400);
         };
-        reader.readAsDataURL(file);
+        reader.readAsDataURL(f);
         e.target.value = "";
       }
 
-      // ---------- OMR Processing ----------
+      // ============================================================
+      // OMR ENGINE v2 — ZipGrade Form Reader
+      // ============================================================
+
       /**
-       * OMR processing pipeline:
+       * Main OMR pipeline:
        * 1. Load image to canvas
        * 2. Convert to grayscale
-       * 3. Increase contrast / threshold
-       * 4. Detect corner marks (dark squares at corners)
-       * 5. Perspective correction (if corners found)
-       * 6. Locate bubble grid area
-       * 7. For each question row, analyze bubble fill darkness
-       * 8. Determine selected answer per question
-       *
-       * Note: This is a functional OMR implementation suitable for
-       * clearly-printed answer sheets with corner marks. Real-world
-       * accuracy depends on lighting, print quality, and alignment.
-       * Always require teacher review before saving.
+       * 3. Adaptive threshold (Otsu)
+       * 4. Detect 4 corner marks (dark squares)
+       * 5. Perspective transform → normalized rectangle
+       * 6. Locate bubble grid (left & right columns)
+       * 7. Sample bubble darkness for each cell
+       * 8. Determine student's answer per question
+       * 9. Render debug canvas showing detected bubbles
        */
-
-      function processImage() {
+      async function processImage() {
         if (!currentScanImageData) {
-          toast("ไม่มีภาพให้ประมวลผล", "error");
+          toast("ไม่มีภาพ", "error");
           return;
         }
         if (!currentScanExam) {
-          toast("กรุณาเลือกชุดข้อสอบก่อน", "error");
+          toast("กรุณาเลือกชุดข้อสอบ", "error");
           return;
         }
-        showLoading("กำลังประมวลผลภาพ OMR...");
-        setTimeout(() => {
-          try {
-            const result = runOMR(currentScanImageData, currentScanExam);
-            lastScanResult = result;
-            currentScanAnswers = result.answers;
-            renderReviewTable();
-            document.getElementById("reviewCard").classList.remove("hidden");
-            document.getElementById("scoreCard").classList.add("hidden");
-            hideLoading();
-            if (result.warnings.length > 0) {
-              result.warnings.forEach((w) => toast(w, "warning", 3500));
-            } else {
-              toast("อ่านคำตอบสำเร็จ กรุณาตรวจสอบ", "success");
-            }
-          } catch (err) {
-            console.error(err);
-            hideLoading();
-            toast("ไม่สามารถอ่านภาพได้ กรุณาถ่ายใหม่หรือเลือกภาพอื่น", "error");
+        showLoading("กำลังอ่านกระดาษคำตอบ...");
+        await new Promise((r) => setTimeout(r, 100));
+
+        try {
+          // Load image into HTMLImageElement
+          const img = await loadImage(currentScanImageData);
+          currentScanImageEl = img;
+
+          // Resize to a manageable size for processing
+          const maxDim = 1400;
+          let w = img.width,
+            h = img.height;
+          const scale = Math.min(1, maxDim / Math.max(w, h));
+          w = Math.floor(w * scale);
+          h = Math.floor(h * scale);
+
+          workCanvas.width = w;
+          workCanvas.height = h;
+          workCtx.drawImage(img, 0, 0, w, h);
+
+          // Step 1: Grayscale
+          const imgData = workCtx.getImageData(0, 0, w, h);
+          const gray = toGrayscale(imgData);
+
+          // Step 2: Otsu threshold → binary (0=black, 255=white)
+          const otsuVal = otsuThreshold(gray);
+          const binary = new Uint8ClampedArray(w * h);
+          for (let i = 0; i < gray.length; i++) {
+            binary[i] = gray[i] < otsuVal ? 0 : 255;
           }
-        }, 200);
-      }
 
-      function runOMR(dataUrl, exam) {
-        const img = new Image();
-        // We need synchronous processing, so use a canvas with the image already loaded
-        // Since dataUrl is already loaded from preview, we can draw it directly
-        const canvas = processingCanvas;
-        const ctx = canvas.getContext("2d");
-        // Load image synchronously via a cached approach
-        const cachedImg = document.getElementById("previewImg");
-        const w = cachedImg.naturalWidth || cachedImg.width || 800;
-        const h = cachedImg.naturalHeight || cachedImg.height || 1000;
-        canvas.width = w;
-        canvas.height = h;
-        ctx.drawImage(cachedImg, 0, 0, w, h);
+          // Step 3: Find corner marks
+          // Search in 4 corner regions (each ~20% of image)
+          const searchW = Math.floor(w * 0.2);
+          const searchH = Math.floor(h * 0.2);
 
-        const imageData = ctx.getImageData(0, 0, w, h);
-        const gray = toGrayscale(imageData);
-        const binary = adaptiveThreshold(gray, w, h);
+          const corners = {
+            tl: findDarkSquare(binary, w, h, 0, 0, searchW, searchH),
+            tr: findDarkSquare(binary, w, h, w - searchW, 0, searchW, searchH),
+            bl: findDarkSquare(binary, w, h, 0, h - searchH, searchW, searchH),
+            br: findDarkSquare(
+              binary,
+              w,
+              h,
+              w - searchW,
+              h - searchH,
+              searchW,
+              searchH,
+            ),
+          };
 
-        // Detect corner marks
-        const corners = detectCornerMarks(binary, w, h);
+          // Check if all 4 corners found
+          const foundCorners = Object.entries(corners).filter(
+            ([k, v]) => v !== null,
+          );
+          if (foundCorners.length < 4) {
+            hideLoading();
+            toast(
+              `พบจุดมุม ${foundCorners.length}/4 — กรุณาถ่ายใหม่ให้เห็นจุดดำทั้ง 4 มุมชัดเจน`,
+              "error",
+              5000,
+            );
+            return;
+          }
 
-        let workingBinary = binary;
-        let workingW = w,
-          workingH = h;
-        let perspectiveNote = "";
+          // Step 4: Perspective transform
+          // Source corners: [tl, tr, bl, br] as found
+          // Dest: rectangle with known aspect ratio matching ZipGrade form
+          // ZipGrade form: ~8.5x11 inch (letter), ratio ~ 1.294
+          // Bubble area (excluding header/footer): from ~25% to ~88% height
+          const outW = 800;
+          const outH = 1100;
+          const warped = perspectiveWarp(
+            binary,
+            w,
+            h,
+            [corners.tl, corners.tr, corners.bl, corners.br],
+            outW,
+            outH,
+          );
 
-        if (corners) {
-          const warped = perspectiveWarp(binary, w, h, corners, 800, 1100);
-          workingBinary = warped.data;
-          workingW = warped.width;
-          workingH = warped.height;
-        } else {
-          perspectiveNote = "ไม่พบจุดอ้างอิงมุมกระดาษ อาจทำให้อ่านคลาดเคลื่อน";
+          // Step 5: Detect bubble grid
+          const examConfig = {
+            questions: currentScanExam.questions,
+            choices: currentScanExam.choices,
+            columns: currentScanExam.questions > 10 ? 2 : 1,
+          };
+
+          const omrResult = readBubbles(
+            warped,
+            examConfig,
+            parseFloat(document.getElementById("thresholdSlider").value) ||
+              0.35,
+          );
+          lastOMRResult = {
+            warped,
+            corners,
+            omrResult,
+            originalSize: { w, h },
+          };
+
+          // Step 6: Render debug canvas
+          renderDebugCanvas(img, corners, omrResult, w, h);
+
+          // Step 7: Show debug card
+          document.getElementById("debugCard").classList.remove("hidden");
+          renderConfidenceList(omrResult);
+
+          // Step 8: Set current answers & show review
+          currentScanAnswers = omrResult.answers;
+          renderReviewTable();
+          document.getElementById("reviewCard").classList.remove("hidden");
+          document.getElementById("scoreCard").classList.add("hidden");
+
+          hideLoading();
+
+          // Report warnings
+          const warnings = [];
+          const unreadable = omrResult.answers.filter((a) => a === -2).length;
+          const unanswered = omrResult.answers.filter((a) => a === -1).length;
+          const lowConf = omrResult.confidences.filter((c) => c < 0.4).length;
+
+          if (unreadable > 0)
+            warnings.push(`${unreadable} ข้อกำกวม (ฝนหลายช่อง)`);
+          if (unanswered > 0) warnings.push(`${unanswered} ข้อไม่พบรอยฝน`);
+          if (lowConf > 0) warnings.push(`${lowConf} ข้อความมั่นใจต่ำ`);
+
+          if (warnings.length > 0) {
+            toast("อ่านเสร็จ: " + warnings.join(" • "), "warning", 4000);
+          } else {
+            toast("อ่านคำตอบสำเร็จ ✓", "success");
+          }
+        } catch (err) {
+          console.error(err);
+          hideLoading();
+          toast("เกิดข้อผิดพลาด: " + err.message, "error", 4000);
         }
-
-        // Detect bubble grid
-        const gridResult = detectBubbleGrid(
-          workingBinary,
-          workingW,
-          workingH,
-          exam,
-        );
-        const answers = gridResult.answers;
-        const warnings = [];
-        if (perspectiveNote) warnings.push(perspectiveNote);
-        if (gridResult.confidence < 0.4)
-          warnings.push("ความมั่นใจในการอ่านต่ำ กรุณาตรวจสอบทุกข้อ");
-
-        // Check for ambiguous / unreadable
-        let ambiguousCount = 0;
-        answers.forEach((a, i) => {
-          if (a === -2) ambiguousCount++;
-        });
-        if (ambiguousCount > 0)
-          warnings.push(`พบ ${ambiguousCount} ข้อที่กำกวม ต้องตรวจสอบ`);
-
-        return { answers, warnings, corners: !!corners };
       }
 
-      function toGrayscale(imageData) {
-        const d = imageData.data;
-        const gray = new Uint8ClampedArray(imageData.width * imageData.height);
-        for (let i = 0; i < d.length; i += 4) {
-          const g = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
-          gray[i / 4] = g;
+      // ---------- Image Loading ----------
+      function loadImage(src) {
+        return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.onload = () => resolve(img);
+          img.onerror = reject;
+          img.src = src;
+        });
+      }
+
+      // ---------- Grayscale ----------
+      function toGrayscale(imgData) {
+        const d = imgData.data;
+        const gray = new Uint8ClampedArray(imgData.width * imgData.height);
+        for (let i = 0, j = 0; i < d.length; i += 4, j++) {
+          gray[j] = (0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2]) | 0;
         }
         return gray;
       }
 
-      function adaptiveThreshold(gray, w, h) {
-        const binary = new Uint8ClampedArray(w * h);
-        // Global Otsu-like threshold
+      // ---------- Otsu Threshold ----------
+      function otsuThreshold(gray) {
+        const hist = new Array(256).fill(0);
+        for (let i = 0; i < gray.length; i++) hist[gray[i]]++;
+        const total = gray.length;
         let sum = 0;
-        for (let i = 0; i < gray.length; i++) sum += gray[i];
-        const mean = sum / gray.length;
-        const threshold = mean * 0.85;
-        for (let i = 0; i < gray.length; i++) {
-          binary[i] = gray[i] < threshold ? 0 : 255;
+        for (let i = 0; i < 256; i++) sum += i * hist[i];
+        let sumB = 0,
+          wB = 0,
+          maxVar = 0,
+          threshold = 128;
+        for (let t = 0; t < 256; t++) {
+          wB += hist[t];
+          if (wB === 0) continue;
+          const wF = total - wB;
+          if (wF === 0) break;
+          sumB += t * hist[t];
+          const mB = sumB / wB;
+          const mF = (sum - sumB) / wF;
+          const between = wB * wF * (mB - mF) * (mB - mF);
+          if (between > maxVar) {
+            maxVar = between;
+            threshold = t;
+          }
         }
-        return binary;
+        return threshold;
       }
 
-      function detectCornerMarks(binary, w, h) {
-        // Search for dark square marks near each corner
-        const searchSize = Math.floor(Math.min(w, h) * 0.12);
-        const corners = [];
-        const positions = [
-          { x: 0, y: 0, name: "tl" },
-          { x: w - searchSize, y: 0, name: "tr" },
-          { x: 0, y: h - searchSize, name: "bl" },
-          { x: w - searchSize, y: h - searchSize, name: "br" },
-        ];
-        for (const pos of positions) {
-          const found = findDarkSquare(binary, w, h, pos.x, pos.y, searchSize);
-          if (!found) return null;
-          corners.push(found);
-        }
-        return corners;
-      }
+      // ---------- Corner Detection ----------
+      /**
+       * Find a dark square (corner mark) within a search region.
+       * Uses integral-image-like sliding window to find the darkest region.
+       * Returns {x, y, size} or null.
+       */
+      function findDarkSquare(binary, w, h, sx, sy, sw, sh) {
+        // Search for a square of dark pixels. Corner marks are ~1.5% of image width.
+        const expectedSize = Math.max(8, Math.floor(Math.min(w, h) * 0.025));
+        const step = Math.max(2, Math.floor(expectedSize / 3));
 
-      function findDarkSquare(binary, w, h, startX, startY, size) {
-        let bestX = -1,
+        let bestScore = 0,
+          bestX = -1,
           bestY = -1,
-          bestScore = 0;
-        const step = 4;
-        const squareSize = Math.floor(Math.min(w, h) * 0.025);
-        for (
-          let y = startY;
-          y < Math.min(startY + size, h - squareSize);
-          y += step
-        ) {
-          for (
-            let x = startX;
-            x < Math.min(startX + size, w - squareSize);
-            x += step
-          ) {
-            let dark = 0,
-              total = 0;
-            for (let dy = 0; dy < squareSize; dy += 2) {
-              for (let dx = 0; dx < squareSize; dx += 2) {
-                const px = x + dx,
-                  py = y + dy;
-                if (px >= w || py >= h) continue;
-                total++;
-                if (binary[py * w + px] === 0) dark++;
+          bestSize = expectedSize;
+
+        // Try a few sizes around expected
+        const sizes = [
+          expectedSize,
+          Math.floor(expectedSize * 0.7),
+          Math.floor(expectedSize * 1.4),
+        ];
+
+        for (const size of sizes) {
+          if (size < 4) continue;
+          for (let y = sy; y <= sy + sh - size; y += step) {
+            for (let x = sx; x <= sx + sw - size; x += step) {
+              // Sample darkness in this square (sample every 2px)
+              let dark = 0,
+                total = 0;
+              for (let dy = 0; dy < size; dy += 2) {
+                for (let dx = 0; dx < size; dx += 2) {
+                  const px = x + dx,
+                    py = y + dy;
+                  if (px >= w || py >= h) continue;
+                  total++;
+                  if (binary[py * w + px] === 0) dark++;
+                }
               }
-            }
-            const score = total > 0 ? dark / total : 0;
-            if (score > bestScore) {
-              bestScore = score;
-              bestX = x + squareSize / 2;
-              bestY = y + squareSize / 2;
+              const score = total > 0 ? dark / total : 0;
+              // Prefer darker AND closer to corner (tie-break)
+              const distFromCorner = Math.hypot(
+                x - (sx + sw / 2),
+                y - (sy + sh / 2),
+              );
+              const adjusted = score - distFromCorner * 0.00005;
+              if (adjusted > bestScore) {
+                bestScore = adjusted;
+                bestX = x + size / 2;
+                bestY = y + size / 2;
+                bestSize = size;
+              }
             }
           }
         }
-        if (bestScore > 0.5) return { x: bestX, y: bestY };
-        return null;
+
+        if (bestScore < 0.5) return null;
+        return { x: bestX, y: bestY, size: bestSize, score: bestScore };
       }
 
-      function perspectiveWarp(binary, w, h, corners, outW, outH) {
-        // corners: [tl, tr, bl, br]
-        const [tl, tr, bl, br] = corners;
-        // Compute perspective transform from source quad to dest rect
-        const src = [
-          { x: tl.x, y: tl.y },
-          { x: tr.x, y: tr.y },
-          { x: br.x, y: br.y },
-          { x: bl.x, y: bl.y },
-        ];
-        const dst = [
+      // ---------- Perspective Warp ----------
+      function perspectiveWarp(binary, w, h, srcCorners, outW, outH) {
+        const [tl, tr, bl, br] = srcCorners;
+
+        // Destination corners (rectangle)
+        const dstCorners = [
           { x: 0, y: 0 },
           { x: outW - 1, y: 0 },
-          { x: outW - 1, y: outH - 1 },
           { x: 0, y: outH - 1 },
+          { x: outW - 1, y: outH - 1 },
         ];
-        const H = computeHomography(src, dst);
+
+        // Compute homography from dst → src (so we can iterate dest and sample src)
+        // We need H such that: src = H * dst
+        const H = computeHomography(dstCorners, [tl, tr, bl, br]);
+
         const out = new Uint8ClampedArray(outW * outH);
         for (let y = 0; y < outH; y++) {
           for (let x = 0; x < outW; x++) {
             const denom = H[6] * x + H[7] * y + 1;
+            if (Math.abs(denom) < 1e-6) {
+              out[y * outW + x] = 255;
+              continue;
+            }
             const sx = (H[0] * x + H[1] * y + H[2]) / denom;
             const sy = (H[3] * x + H[4] * y + H[5]) / denom;
             const ix = Math.round(sx),
@@ -2195,147 +2110,215 @@
         return { data: out, width: outW, height: outH };
       }
 
+      /**
+       * Compute homography matrix H (8 params) mapping src → dst.
+       * We solve 8 linear equations.
+       * src[i] = (x_i, y_i) maps to dst[i] = (u_i, v_i)
+       */
       function computeHomography(src, dst) {
-        // Solve 8x8 linear system for homography matrix (8 unknowns)
         const A = [];
         const b = [];
         for (let i = 0; i < 4; i++) {
-          const { x: sx, y: sy } = src[i];
-          const { x: dx, y: dy } = dst[i];
-          A.push([sx, sy, 1, 0, 0, 0, -dx * sx, -dx * sy]);
-          b.push(dx);
-          A.push([0, 0, 0, sx, sy, 1, -dy * sx, -dy * sy]);
-          b.push(dy);
+          const { x, y } = src[i];
+          const { x: u, y: v } = dst[i];
+          A.push([x, y, 1, 0, 0, 0, -u * x, -u * y]);
+          b.push(u);
+          A.push([0, 0, 0, x, y, 1, -v * x, -v * y]);
+          b.push(v);
         }
-        // Gaussian elimination
-        const n = 8;
+        return solveLinear(A, b);
+      }
+
+      function solveLinear(A, b) {
+        const n = A.length;
+        // Augmented matrix
+        const M = A.map((row, i) => [...row, b[i]]);
+        // Forward elimination with partial pivot
         for (let i = 0; i < n; i++) {
-          // Pivot
           let maxRow = i;
+          for (let k = i + 1; k < n; k++)
+            if (Math.abs(M[k][i]) > Math.abs(M[maxRow][i])) maxRow = k;
+          [M[i], M[maxRow]] = [M[maxRow], M[i]];
+          const pivot = M[i][i];
+          if (Math.abs(pivot) < 1e-9) continue;
           for (let k = i + 1; k < n; k++) {
-            if (Math.abs(A[k][i]) > Math.abs(A[maxRow][i])) maxRow = k;
-          }
-          [A[i], A[maxRow]] = [A[maxRow], A[i]];
-          [b[i], b[maxRow]] = [b[maxRow], b[i]];
-          // Eliminate
-          for (let k = i + 1; k < n; k++) {
-            const factor = A[k][i] / A[i][i];
-            for (let j = i; j < n; j++) A[k][j] -= factor * A[i][j];
-            b[k] -= factor * b[i];
+            const factor = M[k][i] / pivot;
+            for (let j = i; j <= n; j++) M[k][j] -= factor * M[i][j];
           }
         }
-        // Back substitute
-        const x = new Array(n);
+        // Back substitution
+        const x = new Array(n).fill(0);
         for (let i = n - 1; i >= 0; i--) {
-          let sum = b[i];
-          for (let j = i + 1; j < n; j++) sum -= A[i][j] * x[j];
-          x[i] = sum / A[i][i];
+          let s = M[i][n];
+          for (let j = i + 1; j < n; j++) s -= M[i][j] * x[j];
+          x[i] = Math.abs(M[i][i]) < 1e-9 ? 0 : s / M[i][i];
         }
         return x;
       }
 
-      function detectBubbleGrid(binary, w, h, exam) {
-        // Locate the bubble area by finding rows of dark circles
-        // Use a simplified approach: assume bubbles are arranged in a grid
-        // in the lower 2/3 of the sheet, with a known structure.
+      // ---------- Bubble Grid Reading ----------
+      /**
+       * Read bubble answers from the warped binary image.
+       *
+       * ZipGrade form layout (from user's image):
+       * - Header area (name, class) at top ~25% of paper
+       * - Bubble grid area from ~28% to ~88% of paper height
+       * - 2 columns: left = Q1-10, right = Q11-20 (for 20Q form)
+       * - Each column has 5 bubble columns (choices 1-5)
+       *
+       * We detect the grid by:
+       * 1. Estimate grid area from known proportions
+       * 2. For each question row, sample 5 bubble positions
+       * 3. Compute darkness of each → pick darkest above threshold
+       */
+      function readBubbles(warped, config, threshold = 0.35) {
+        const { data, width: w, height: h } = warped;
+        const { questions, choices, columns } = config;
+        const rows = Math.ceil(questions / columns);
 
-        const qCount = exam.questions;
-        const choices = exam.choices;
+        // Grid area estimation (based on ZipGrade form layout)
+        // From the image: bubble area starts ~28% from top, ends ~88%
+        // Left column starts ~10%, right column ends ~90%
+        const gridTop = Math.floor(h * 0.28);
+        const gridBottom = Math.floor(h * 0.88);
+        const gridLeft = Math.floor(w * 0.08);
+        const gridRight = Math.floor(w * 0.92);
 
-        // Estimate content area (after header)
-        const headerRatio = 0.22;
-        const top = Math.floor(h * headerRatio);
-        const bottom = Math.floor(h * 0.95);
-        const contentH = bottom - top;
+        const gridW = gridRight - gridLeft;
+        const gridH = gridBottom - gridTop;
 
-        // Estimate columns: questions arranged in 2 columns typically
-        const cols = qCount > 30 ? 3 : qCount > 15 ? 2 : 1;
-        const rows = Math.ceil(qCount / cols);
-        const rowH = contentH / rows;
+        const colW = gridW / columns;
+        const rowH = gridH / rows;
 
-        // Bubble area starts after question number
-        const leftMargin = Math.floor(w * 0.08);
-        const rightMargin = Math.floor(w * 0.95);
-        const contentW = rightMargin - leftMargin;
+        // Within each column, question number takes left ~22%, then 5 bubbles
+        const qNumW = colW * 0.2;
+        const bubbleAreaW = colW - qNumW;
+        const bubbleSpacing = bubbleAreaW / choices;
+        const bubbleRadius = Math.max(
+          3,
+          Math.floor(Math.min(rowH, bubbleSpacing) * 0.32),
+        );
 
         const answers = [];
+        const confidences = [];
+        const debugBubbles = []; // For rendering
 
-        for (let q = 0; q < qCount; q++) {
+        for (let q = 0; q < questions; q++) {
           const col = Math.floor(q / rows);
           const row = q % rows;
-          const colW = contentW / cols;
-          const colLeft = leftMargin + col * colW;
-
-          const rowTop = top + row * rowH;
+          const colLeft = gridLeft + col * colW;
+          const rowTop = gridTop + row * rowH;
           const rowCenterY = rowTop + rowH / 2;
 
-          // Bubble positions within row
-          const bubbleAreaLeft = colLeft + colW * 0.25;
-          const bubbleAreaRight = colLeft + colW * 0.95;
-          const bubbleAreaW = bubbleAreaRight - bubbleAreaLeft;
-          const bubbleSpacing = bubbleAreaW / choices;
-          const bubbleR = Math.max(
-            3,
-            Math.floor(Math.min(rowH, bubbleSpacing) * 0.3),
-          );
-
-          // Sample darkness for each choice
+          // Sample darkness of each choice
           const darkness = [];
+          const positions = [];
           for (let c = 0; c < choices; c++) {
-            const bx = Math.floor(bubbleAreaLeft + bubbleSpacing * (c + 0.5));
+            const bx = Math.floor(colLeft + qNumW + bubbleSpacing * (c + 0.5));
             const by = Math.floor(rowCenterY);
-            const d = sampleCircleDarkness(binary, w, h, bx, by, bubbleR);
+            const d = sampleCircleDarkness(data, w, h, bx, by, bubbleRadius);
             darkness.push(d);
+            positions.push({ x: bx, y: by, r: bubbleRadius });
           }
 
-          // Determine answer
+          // Decision logic
           const maxD = Math.max(...darkness);
           const minD = Math.min(...darkness);
           const range = maxD - minD;
 
-          if (maxD < 0.15) {
-            // No bubble filled - unanswered
-            answers.push(-1);
+          // Find filled bubbles (significantly darker than white background)
+          // White ~ 1.0 (binary 255), dark ~ 0.0 (binary 0)
+          // We use "darkness" = fraction of dark pixels (0 = white, 1 = black)
+          const absThreshold = threshold; // default 0.35
+
+          let answer = -1;
+          let confidence = 0;
+          let status = "unanswered"; // 'single', 'ambiguous', 'unanswered', 'faint'
+
+          if (maxD < absThreshold * 0.5) {
+            // Nothing filled at all
+            answer = -1;
+            confidence = 1 - maxD; // confident it's empty
+            status = "unanswered";
           } else {
-            // Find bubbles above threshold
-            const threshold = Math.max(0.25, minD + range * 0.5);
+            // Find all bubbles above threshold
             const filled = [];
             for (let c = 0; c < choices; c++) {
-              if (darkness[c] >= threshold) filled.push(c);
+              if (darkness[c] >= absThreshold) filled.push(c);
             }
+
             if (filled.length === 0) {
-              answers.push(-1); // unanswered
+              // Nothing above threshold but something below
+              // Might be faint mark — pick darkest if it's clearly darkest
+              const sorted = darkness
+                .map((d, i) => ({ d, i }))
+                .sort((a, b) => b.d - a.d);
+              if (sorted[0].d > sorted[1].d * 1.8 && sorted[0].d > 0.18) {
+                answer = sorted[0].i;
+                confidence = sorted[0].d;
+                status = "faint";
+              } else {
+                answer = -1;
+                confidence = 1 - maxD;
+                status = "unanswered";
+              }
             } else if (filled.length === 1) {
-              answers.push(filled[0]); // single answer
+              answer = filled[0];
+              confidence = darkness[filled[0]];
+              status = "single";
             } else {
-              // Check if one is significantly darker
+              // Multiple filled — check if one is clearly darkest
               filled.sort((a, b) => darkness[b] - darkness[a]);
               if (darkness[filled[0]] - darkness[filled[1]] > 0.25) {
-                answers.push(filled[0]); // clear winner
+                answer = filled[0];
+                confidence = darkness[filled[0]] - darkness[filled[1]];
+                status = "single";
               } else {
-                answers.push(-2); // ambiguous
+                answer = -2; // ambiguous
+                confidence = 0.5;
+                status = "ambiguous";
               }
             }
           }
+
+          answers.push(answer);
+          confidences.push(confidence);
+          debugBubbles.push({ q, positions, darkness, answer, status });
         }
 
-        // Confidence based on how clear the marks were
-        const filledCount = answers.filter((a) => a >= 0).length;
-        const unansweredCount = answers.filter((a) => a === -1).length;
-        const confidence = qCount > 0 ? filledCount / qCount : 0;
-
-        return { answers, confidence };
+        return {
+          answers,
+          confidences,
+          debugBubbles,
+          grid: {
+            gridTop,
+            gridBottom,
+            gridLeft,
+            gridRight,
+            colW,
+            rowH,
+            bubbleRadius,
+            choices,
+            rows,
+            columns,
+          },
+        };
       }
 
+      /**
+       * Sample darkness in a circle: returns fraction of pixels that are dark.
+       * 0 = all white (no fill), 1 = all dark (full fill)
+       */
       function sampleCircleDarkness(binary, w, h, cx, cy, r) {
         let dark = 0,
           total = 0;
+        const r2 = r * r;
         for (let y = cy - r; y <= cy + r; y++) {
           for (let x = cx - r; x <= cx + r; x++) {
             if (x < 0 || x >= w || y < 0 || y >= h) continue;
             const dx = x - cx,
               dy = y - cy;
-            if (dx * dx + dy * dy <= r * r) {
+            if (dx * dx + dy * dy <= r2) {
               total++;
               if (binary[y * w + x] === 0) dark++;
             }
@@ -2344,10 +2327,108 @@
         return total > 0 ? dark / total : 0;
       }
 
+      // ---------- Debug Canvas Rendering ----------
+      function renderDebugCanvas(img, corners, omrResult, w, h) {
+        const canvas = document.getElementById("debugCanvas");
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, w, h);
+
+        // Dark overlay for visibility
+        ctx.fillStyle = "rgba(0,0,0,0.35)";
+        ctx.fillRect(0, 0, w, h);
+
+        // Draw corner markers
+        ctx.strokeStyle = "#4f46e5";
+        ctx.lineWidth = 3;
+        for (const [name, c] of Object.entries(corners)) {
+          if (!c) continue;
+          ctx.beginPath();
+          ctx.arc(c.x, c.y, c.size * 1.5, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.fillStyle = "#4f46e5";
+          ctx.beginPath();
+          ctx.arc(c.x, c.y, 4, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        // Draw the quadrilateral connecting corners
+        if (corners.tl && corners.tr && corners.bl && corners.br) {
+          ctx.strokeStyle = "#4f46e5";
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(corners.tl.x, corners.tl.y);
+          ctx.lineTo(corners.tr.x, corners.tr.y);
+          ctx.lineTo(corners.br.x, corners.br.y);
+          ctx.lineTo(corners.bl.x, corners.bl.y);
+          ctx.closePath();
+          ctx.stroke();
+        }
+
+        // Draw bubble positions (colors based on status)
+        const { debugBubbles } = omrResult;
+        for (const db of debugBubbles) {
+          for (let c = 0; c < db.positions.length; c++) {
+            const p = db.positions[c];
+            const isSelected = db.answer === c;
+            const dark = db.darkness[c];
+
+            // Color: green if selected & single, red if ambiguous, yellow if faint, gray otherwise
+            let color = "rgba(200,200,200,0.5)";
+            if (db.status === "ambiguous") color = "rgba(239,68,68,0.9)";
+            else if (isSelected && db.status === "single")
+              color = "rgba(16,185,129,0.95)";
+            else if (isSelected && db.status === "faint")
+              color = "rgba(245,158,11,0.95)";
+            else if (dark > 0.35) color = "rgba(245,158,11,0.7)";
+
+            ctx.strokeStyle = color;
+            ctx.lineWidth = isSelected ? 3 : 1.5;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // Fill if selected
+            if (isSelected) {
+              ctx.fillStyle = color
+                .replace("0.9", "0.25")
+                .replace("0.95", "0.3");
+              ctx.fill();
+            }
+          }
+        }
+      }
+
+      function renderConfidenceList(omrResult) {
+        const el = document.getElementById("confidenceList");
+        const { confidences, answers } = omrResult;
+        const rows = answers
+          .map((a, i) => {
+            const conf = confidences[i];
+            let cls = "high";
+            if (conf < 0.3) cls = "low";
+            else if (conf < 0.6) cls = "medium";
+
+            let status = "";
+            if (a === -1) status = "ไม่พบรอยฝน";
+            else if (a === -2) status = "กำกวม";
+            else status = `อ่านได้: ${CHOICE_LABELS[a]}`;
+
+            return `<div class="conf-row ${cls}">
+      <span><b>ข้อ ${i + 1}</b></span>
+      <span>${status}</span>
+      <span>${(conf * 100).toFixed(0)}%</span>
+    </div>`;
+          })
+          .join("");
+        el.innerHTML = `<div style="max-height:200px;overflow-y:auto;">${rows}</div>`;
+      }
+
       // ---------- Review ----------
       function renderReviewTable() {
+        if (!currentScanExam) return;
         const exam = currentScanExam;
-        if (!exam) return;
         const tbody = document.getElementById("reviewTableBody");
         tbody.innerHTML = "";
         for (let i = 0; i < exam.questions; i++) {
@@ -2393,7 +2474,6 @@
     `;
           tbody.appendChild(tr);
         }
-        // Bind change events
         tbody.querySelectorAll("select").forEach((sel) => {
           sel.addEventListener("change", () => {
             const qi = parseInt(sel.dataset.q);
@@ -2422,7 +2502,7 @@
 
       function saveResult() {
         if (!currentScanExam || !currentScanAnswers.length) {
-          toast("ไม่มีข้อมูลที่จะบันทึก", "error");
+          toast("ไม่มีข้อมูล", "error");
           return;
         }
         const studentName = document.getElementById("studentName").value.trim();
@@ -2450,12 +2530,10 @@
         };
         results.push(record);
         saveJSON(LS_KEYS.results, results);
-
-        // Show score
         renderScoreCard(stats, record);
         document.getElementById("scoreCard").classList.remove("hidden");
         document.getElementById("reviewCard").classList.add("hidden");
-        toast("บันทึกผลการตรวจแล้ว", "success");
+        toast("บันทึกผลแล้ว ✓", "success");
         renderDashboard();
         renderResults();
       }
@@ -2465,21 +2543,19 @@
           stats.totalPossible > 0
             ? ((stats.score / stats.totalPossible) * 100).toFixed(1)
             : "0";
-        const summary = document.getElementById("scoreSummary");
-        summary.innerHTML = `
-    <div class="score-item info"><div class="score-val">${stats.score}</div><div class="score-lbl">คะแนนที่ได้</div></div>
-    <div class="score-item"><div class="score-val">${stats.totalPossible}</div><div class="score-lbl">คะแนนเต็ม</div></div>
+        document.getElementById("scoreSummary").innerHTML = `
+    <div class="score-item info"><div class="score-val">${stats.score}</div><div class="score-lbl">ได้</div></div>
+    <div class="score-item"><div class="score-val">${stats.totalPossible}</div><div class="score-lbl">เต็ม</div></div>
+    <div class="score-item ${pct >= 50 ? "good" : "bad"}"><div class="score-val">${pct}%</div><div class="score-lbl">ร้อยละ</div></div>
     <div class="score-item good"><div class="score-val">${stats.correct}</div><div class="score-lbl">ถูก</div></div>
     <div class="score-item bad"><div class="score-val">${stats.wrong}</div><div class="score-lbl">ผิด</div></div>
     <div class="score-item warn"><div class="score-val">${stats.unanswered}</div><div class="score-lbl">ไม่ตอบ</div></div>
-    <div class="score-item"><div class="score-val" style="color:#8b5cf6;">${stats.ambiguous}</div><div class="score-lbl">ต้องตรวจสอบ</div></div>
   `;
-        const detail = document.getElementById("scoreDetail");
-        detail.innerHTML = `
-    <div class="text-center" style="margin-top:10px;">
-      <div style="font-size:1.1rem;font-weight:700;color:${pct >= 50 ? "var(--success)" : "var(--danger)"};">${pct}%</div>
-      <div class="text-muted" style="font-size:0.82rem;">${escapeHtml(record.studentName)} ${record.studentId ? "(" + escapeHtml(record.studentId) + ")" : ""}</div>
-      <div class="text-muted" style="font-size:0.78rem;">${escapeHtml(record.examName)} • ${formatDateTime(record.createdAt)}</div>
+        document.getElementById("scoreDetail").innerHTML = `
+    <div class="text-center mt-2">
+      <div style="font-weight:700;">${escapeHtml(record.studentName)} ${record.studentId ? "(" + escapeHtml(record.studentId) + ")" : ""}</div>
+      <div class="text-muted" style="font-size:0.82rem;">${escapeHtml(record.examName)} • ${formatDateTime(record.createdAt)}</div>
+      ${stats.ambiguous > 0 ? `<div class="text-muted" style="font-size:0.8rem;color:var(--ambiguous);">มี ${stats.ambiguous} ข้อกำกวม (นับเป็นผิด)</div>` : ""}
     </div>
   `;
       }
@@ -2487,8 +2563,9 @@
       function resetScan() {
         currentScanImageData = null;
         currentScanAnswers = [];
-        lastScanResult = null;
+        lastOMRResult = null;
         document.getElementById("previewCard").classList.add("hidden");
+        document.getElementById("debugCard").classList.add("hidden");
         document.getElementById("reviewCard").classList.add("hidden");
         document.getElementById("scoreCard").classList.add("hidden");
         document.getElementById("studentName").value = "";
@@ -2497,44 +2574,41 @@
 
       // ---------- Results ----------
       function renderResults() {
-        const examFilter = document.getElementById("resultFilterExam").value;
-        const search = document
+        const ef = document.getElementById("resultFilterExam").value;
+        const s = document
           .getElementById("resultSearch")
           .value.trim()
           .toLowerCase();
-        const container = document.getElementById("resultList");
         let list = [...results].sort(
           (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
         );
-        if (examFilter) list = list.filter((r) => r.examId === examFilter);
-        if (search)
+        if (ef) list = list.filter((r) => r.examId === ef);
+        if (s)
           list = list.filter((r) =>
-            (r.studentName + " " + r.studentId).toLowerCase().includes(search),
+            (r.studentName + " " + r.studentId).toLowerCase().includes(s),
           );
-
+        const c = document.getElementById("resultList");
         if (list.length === 0) {
-          container.innerHTML =
+          c.innerHTML =
             '<div class="empty-state"><div class="icon">📋</div><p>ไม่พบผลการตรวจ</p></div>';
           return;
         }
-        container.innerHTML = list
+        c.innerHTML = list
           .map((r) => {
             const pct =
               r.totalPossible > 0
                 ? ((r.score / r.totalPossible) * 100).toFixed(1)
                 : "0";
-            const badgeClass = pct >= 50 ? "badge-correct" : "badge-wrong";
+            const cls = pct >= 50 ? "badge-correct" : "badge-wrong";
             return `<div class="exam-item">
       <div class="exam-info">
         <div class="exam-name">${escapeHtml(r.studentName)} ${r.studentId ? '<span class="text-muted" style="font-size:0.8rem;">(' + escapeHtml(r.studentId) + ")</span>" : ""}</div>
         <div class="exam-meta">${escapeHtml(r.examName)} • ${formatDateTime(r.createdAt)}<br>
-          คะแนน ${r.score}/${r.totalPossible} • ถูก ${r.correct} • ผิด ${r.wrong} • ไม่ตอบ ${r.unanswered}${r.ambiguous ? " • กำกวม " + r.ambiguous : ""}
-        </div>
+          ${r.score}/${r.totalPossible} • ถูก ${r.correct} • ผิด ${r.wrong} • ไม่ตอบ ${r.unanswered}${r.ambiguous ? " • กำกวม " + r.ambiguous : ""}</div>
       </div>
       <div class="exam-actions">
-        <span class="badge ${badgeClass}" style="margin-right:4px;">${pct}%</span>
+        <span class="badge ${cls}">${pct}%</span>
         <button class="icon-btn" onclick="viewResult('${r.id}')" title="ดู">👁️</button>
-        <button class="icon-btn" onclick="editResult('${r.id}')" title="แก้ไข">✏️</button>
         <button class="icon-btn danger" onclick="deleteResult('${r.id}')" title="ลบ">🗑️</button>
       </div>
     </div>`;
@@ -2545,125 +2619,66 @@
       window.viewResult = function (id) {
         const r = results.find((x) => x.id === id);
         if (!r) return;
-        const exam = exams.find((e) => e.id === r.examId) || { choices: 4 };
         let rows = "";
         r.answers.forEach((a, i) => {
           const correct = r.answerKey[i];
-          let ansLabel, resultLabel, cls;
+          let al, rl, cls;
           if (a === -2) {
-            ansLabel = "?";
-            resultLabel = "กำกวม";
+            al = "?";
+            rl = "กำกวม";
             cls = "ambiguous";
           } else if (a === -1) {
-            ansLabel = "-";
-            resultLabel = "ไม่ตอบ";
+            al = "-";
+            rl = "ไม่ตอบ";
             cls = "unanswered";
           } else {
-            ansLabel = CHOICE_LABELS[a];
-            resultLabel = a === correct ? "ถูก" : "ผิด";
+            al = CHOICE_LABELS[a];
+            rl = a === correct ? "ถูก" : "ผิด";
             cls = a === correct ? "correct" : "wrong";
           }
-          rows += `<tr class="${cls}"><td>${i + 1}</td><td>${ansLabel}</td><td>${CHOICE_LABELS[correct]}</td><td><span class="badge badge-${cls}">${resultLabel}</span></td></tr>`;
+          rows += `<tr class="${cls}"><td>${i + 1}</td><td>${al}</td><td>${CHOICE_LABELS[correct]}</td><td><span class="badge badge-${cls}">${rl}</span></td></tr>`;
         });
         document.getElementById("detailModalTitle").textContent =
-          "ผลการตรวจ: " + r.studentName;
+          "ผล: " + r.studentName;
         document.getElementById("detailModalBody").innerHTML = `
     <div class="form-group"><label>ชุดข้อสอบ</label><div>${escapeHtml(r.examName)}</div></div>
     <div class="form-row">
-      <div class="form-group"><label>ชื่อนักเรียน</label><div>${escapeHtml(r.studentName)}</div></div>
+      <div class="form-group"><label>ชื่อ</label><div>${escapeHtml(r.studentName)}</div></div>
       <div class="form-group"><label>รหัส</label><div>${escapeHtml(r.studentId || "-")}</div></div>
     </div>
     <div class="form-row">
       <div class="form-group"><label>คะแนน</label><div><b>${r.score}</b> / ${r.totalPossible}</div></div>
       <div class="form-group"><label>ร้อยละ</label><div>${((r.score / r.totalPossible) * 100).toFixed(1)}%</div></div>
     </div>
-    <div class="form-row">
-      <div class="form-group"><label>ถูก</label><div style="color:var(--success);font-weight:700;">${r.correct}</div></div>
-      <div class="form-group"><label>ผิด</label><div style="color:var(--danger);font-weight:700;">${r.wrong}</div></div>
-    </div>
-    <div class="form-row">
-      <div class="form-group"><label>ไม่ตอบ</label><div style="color:var(--warning);font-weight:700;">${r.unanswered}</div></div>
-      <div class="form-group"><label>กำกวม</label><div style="color:#8b5cf6;font-weight:700;">${r.ambiguous}</div></div>
-    </div>
-    <div class="divider"></div>
     <div class="result-table-wrap">
-      <table class="result-table"><thead><tr><th>ข้อ</th><th>คำตอบ</th><th>เฉลย</th><th>ผล</th></tr></thead><tbody>${rows}</tbody></table>
+      <table class="result-table"><thead><tr><th>ข้อ</th><th>ตอบ</th><th>เฉลย</th><th>ผล</th></tr></thead><tbody>${rows}</tbody></table>
     </div>
     <div class="text-muted mt-2" style="font-size:0.78rem;">ตรวจเมื่อ: ${formatDateTime(r.createdAt)}</div>
   `;
         document.getElementById("detailModal").classList.add("active");
       };
 
-      window.editResult = function (id) {
-        const r = results.find((x) => x.id === id);
-        if (!r) return;
-        const exam = exams.find((e) => e.id === r.examId);
-        if (!exam) {
-          toast("ไม่พบชุดข้อสอบ", "error");
-          return;
-        }
-        // Load into scan review
-        switchSection("scan");
-        document.getElementById("scanExamSelect").value = r.examId;
-        onScanExamChange();
-        currentScanExam = exam;
-        currentScanAnswers = [...r.answers];
-        currentScanImageData = null;
-        document.getElementById("previewCard").classList.add("hidden");
-        document.getElementById("scoreCard").classList.add("hidden");
-        document.getElementById("studentName").value = r.studentName;
-        document.getElementById("studentId").value = r.studentId;
-        renderReviewTable();
-        document.getElementById("reviewCard").classList.remove("hidden");
-        // Change save to update
-        const btn = document.getElementById("btnConfirmSave");
-        btn.textContent = "💾 อัปเดตผลการตรวจ";
-        btn.onclick = () => {
-          const stats = computeScore(currentScanAnswers, exam);
-          r.studentName =
-            document.getElementById("studentName").value.trim() ||
-            r.studentName;
-          r.studentId = document.getElementById("studentId").value.trim();
-          r.answers = [...currentScanAnswers];
-          r.correct = stats.correct;
-          r.wrong = stats.wrong;
-          r.unanswered = stats.unanswered;
-          r.ambiguous = stats.ambiguous;
-          r.score = stats.score;
-          r.totalPossible = stats.totalPossible;
-          saveJSON(LS_KEYS.results, results);
-          toast("อัปเดตผลการตรวจแล้ว", "success");
-          renderScoreCard(stats, r);
-          document.getElementById("scoreCard").classList.remove("hidden");
-          document.getElementById("reviewCard").classList.add("hidden");
-          btn.textContent = "💾 ยืนยันบันทึกผล";
-          btn.onclick = saveResult;
-          renderResults();
-          renderDashboard();
-        };
-      };
-
-      window.deleteResult = function (id) {
-        if (!confirm("ต้องการลบผลการตรวจนี้ใช่หรือไม่?")) return;
+      window.deleteResult = (id) => {
+        if (!confirm("ลบผลการตรวจนี้?")) return;
         results = results.filter((r) => r.id !== id);
         saveJSON(LS_KEYS.results, results);
         renderResults();
         renderDashboard();
-        toast("ลบผลการตรวจแล้ว", "success");
+        toast("ลบแล้ว", "success");
       };
 
       function exportCSV() {
         if (results.length === 0) {
-          toast("ไม่มีข้อมูลให้ส่งออก", "error");
+          toast("ไม่มีข้อมูล", "error");
           return;
         }
         const headers = [
           "วันที่",
           "ชุดข้อสอบ",
-          "ชื่อนักเรียน",
-          "รหัสนักเรียน",
+          "ชื่อ",
+          "รหัส",
           "คะแนน",
-          "คะแนนเต็ม",
+          "เต็ม",
           "ร้อยละ",
           "ถูก",
           "ผิด",
@@ -2696,7 +2711,7 @@
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = `ผลการตรวจข้อสอบ_${new Date().toISOString().slice(0, 10)}.csv`;
+        a.download = `ผลตรวจ_${new Date().toISOString().slice(0, 10)}.csv`;
         a.click();
         URL.revokeObjectURL(url);
         toast("ส่งออก CSV แล้ว", "success");
@@ -2704,18 +2719,18 @@
 
       function printResults() {
         let list = [...results];
-        const examFilter = document.getElementById("resultFilterExam").value;
-        const search = document
+        const ef = document.getElementById("resultFilterExam").value;
+        const s = document
           .getElementById("resultSearch")
           .value.trim()
           .toLowerCase();
-        if (examFilter) list = list.filter((r) => r.examId === examFilter);
-        if (search)
+        if (ef) list = list.filter((r) => r.examId === ef);
+        if (s)
           list = list.filter((r) =>
-            (r.studentName + " " + r.studentId).toLowerCase().includes(search),
+            (r.studentName + " " + r.studentId).toLowerCase().includes(s),
           );
         if (list.length === 0) {
-          toast("ไม่มีข้อมูลให้พิมพ์", "error");
+          toast("ไม่มีข้อมูล", "error");
           return;
         }
         let rows = list
@@ -2724,14 +2739,12 @@
               r.totalPossible > 0
                 ? ((r.score / r.totalPossible) * 100).toFixed(1)
                 : "0";
-            return `<tr>
-      <td>${i + 1}</td><td>${escapeHtml(r.studentName)}</td><td>${escapeHtml(r.studentId || "-")}</td>
+            return `<tr><td>${i + 1}</td><td>${escapeHtml(r.studentName)}</td><td>${escapeHtml(r.studentId || "-")}</td>
       <td>${escapeHtml(r.examName)}</td><td>${r.score}</td><td>${r.totalPossible}</td><td>${pct}%</td>
-      <td>${r.correct}</td><td>${r.wrong}</td><td>${r.unanswered}</td>
-    </tr>`;
+      <td>${r.correct}</td><td>${r.wrong}</td><td>${r.unanswered}</td></tr>`;
           })
           .join("");
-        const html = `<div style="font-family:'Sarabun',sans-serif;padding:20px;">
+        const html = `<div style="font-family:sans-serif;padding:20px;">
     <h2 style="text-align:center;">รายงานผลการตรวจข้อสอบ</h2>
     <p style="text-align:center;font-size:0.85rem;color:#666;">พิมพ์เมื่อ ${formatDateTime(nowISO())}</p>
     <table style="width:100%;border-collapse:collapse;font-size:0.8rem;margin-top:16px;">
@@ -2746,17 +2759,14 @@
         <th style="border:1px solid #ccc;padding:6px;">ถูก</th>
         <th style="border:1px solid #ccc;padding:6px;">ผิด</th>
         <th style="border:1px solid #ccc;padding:6px;">ไม่ตอบ</th>
-      </tr></thead>
-      <tbody>${rows}</tbody>
-    </table>
-  </div>`;
-        const printArea = document.getElementById("printArea");
-        printArea.innerHTML = html;
-        printArea.style.display = "block";
+      </tr></thead><tbody>${rows}</tbody></table></div>`;
+        const pa = document.getElementById("printArea");
+        pa.innerHTML = html;
+        pa.style.display = "block";
         window.print();
         setTimeout(() => {
-          printArea.style.display = "none";
-          printArea.innerHTML = "";
+          pa.style.display = "none";
+          pa.innerHTML = "";
         }, 500);
       }
 
@@ -2768,7 +2778,6 @@
         document.getElementById("settingAutoProcess").checked =
           settings.autoProcess;
       }
-
       function saveSettings() {
         settings.theme = document.getElementById("settingTheme").value;
         settings.resolution = parseInt(
@@ -2778,9 +2787,8 @@
           document.getElementById("settingAutoProcess").checked;
         applyTheme(settings.theme);
         saveJSON(LS_KEYS.settings, settings);
-        toast("บันทึกการตั้งค่าแล้ว", "success");
+        toast("บันทึกแล้ว", "success");
       }
-
       function exportAll() {
         const data = { exams, results, settings, exportedAt: nowISO() };
         const blob = new Blob([JSON.stringify(data, null, 2)], {
@@ -2792,17 +2800,11 @@
         a.download = `omr_backup_${new Date().toISOString().slice(0, 10)}.json`;
         a.click();
         URL.revokeObjectURL(url);
-        toast("ส่งออกข้อมูลแล้ว", "success");
+        toast("ส่งออกแล้ว", "success");
       }
-
       function clearAll() {
-        if (
-          !confirm(
-            "ต้องการล้างข้อมูลทั้งหมด (ชุดข้อสอบและผลการตรวจ) ใช่หรือไม่?\nการกระทำนี้ไม่สามารถย้อนกลับได้",
-          )
-        )
-          return;
-        if (!confirm("ยืนยันอีกครั้ง: ลบข้อมูลทั้งหมด?")) return;
+        if (!confirm("ล้างข้อมูลทั้งหมด?")) return;
+        if (!confirm("ยืนยันอีกครั้ง")) return;
         exams = [];
         results = [];
         saveJSON(LS_KEYS.exams, exams);
@@ -2811,7 +2813,19 @@
         renderExamList();
         renderResults();
         renderScanSelect();
-        toast("ล้างข้อมูลทั้งหมดแล้ว", "success");
+        toast("ล้างแล้ว", "success");
+      }
+      function refreshResultFilter() {
+        const sel = document.getElementById("resultFilterExam");
+        const cur = sel.value;
+        sel.innerHTML =
+          '<option value="">ทุกชุดข้อสอบ</option>' +
+          exams
+            .map(
+              (e) => `<option value="${e.id}">${escapeHtml(e.name)}</option>`,
+            )
+            .join("");
+        if (cur) sel.value = cur;
       }
 
       // ---------- Init ----------
@@ -2822,7 +2836,13 @@
           theme: "light",
           resolution: 1920,
           autoProcess: true,
+          threshold: 0.35,
         });
+
+        // Set threshold slider initial
+        document.getElementById("thresholdSlider").value = settings.threshold;
+        document.getElementById("thresholdVal").textContent =
+          settings.threshold.toFixed(2);
 
         applyTheme(settings.theme);
         renderDashboard();
@@ -2830,15 +2850,16 @@
         renderScanSelect();
         renderResults();
         renderSettings();
+        refreshResultFilter();
 
-        // Nav tabs
+        // Nav
         document.querySelectorAll(".nav-tab").forEach((tab) => {
           tab.addEventListener("click", () =>
             switchSection(tab.dataset.section),
           );
         });
 
-        // Theme toggle
+        // Theme
         document.getElementById("themeToggle").addEventListener("click", () => {
           applyTheme(settings.theme === "dark" ? "light" : "dark");
         });
@@ -2855,15 +2876,7 @@
         });
         document
           .getElementById("fExamQuestions")
-          .addEventListener("change", () => {
-            currentExamForGrid = {
-              questions: parseInt(
-                document.getElementById("fExamQuestions").value,
-              ),
-              choices: parseInt(document.getElementById("fExamChoices").value),
-            };
-            renderAnswerGrid();
-          });
+          .addEventListener("change", renderAnswerGrid);
         document
           .getElementById("fExamChoices")
           .addEventListener("change", renderAnswerGrid);
@@ -2894,19 +2907,6 @@
             if (e.target.id === "detailModal")
               e.target.classList.remove("active");
           });
-
-        // Print modal
-        document
-          .getElementById("printModalClose")
-          .addEventListener("click", () =>
-            document.getElementById("printModal").classList.remove("active"),
-          );
-        document.getElementById("printModal").addEventListener("click", (e) => {
-          if (e.target.id === "printModal") e.target.classList.remove("active");
-        });
-        document
-          .getElementById("btnDoPrint")
-          .addEventListener("click", doPrint);
 
         // Exam search
         document
@@ -2945,6 +2945,29 @@
           .getElementById("btnCancelReview")
           .addEventListener("click", resetScan);
 
+        // Threshold slider
+        const slider = document.getElementById("thresholdSlider");
+        slider.addEventListener("input", () => {
+          document.getElementById("thresholdVal").textContent = parseFloat(
+            slider.value,
+          ).toFixed(2);
+        });
+        slider.addEventListener("change", () => {
+          settings.threshold = parseFloat(slider.value);
+          saveJSON(LS_KEYS.settings, settings);
+        });
+
+        // Reprocess with new threshold
+        document
+          .getElementById("btnReprocess")
+          .addEventListener("click", () => {
+            if (!currentScanImageData) {
+              toast("ไม่มีภาพ", "error");
+              return;
+            }
+            processImage();
+          });
+
         // Results
         document
           .getElementById("resultFilterExam")
@@ -2976,17 +2999,7 @@
           .getElementById("btnClearAll")
           .addEventListener("click", clearAll);
 
-        // Populate result filter
-        const filterSel = document.getElementById("resultFilterExam");
-        filterSel.innerHTML =
-          '<option value="">ทุกชุดข้อสอบ</option>' +
-          exams
-            .map(
-              (e) => `<option value="${e.id}">${escapeHtml(e.name)}</option>`,
-            )
-            .join("");
-
-        // Handle visibility change to stop camera
+        // Stop camera on hide
         document.addEventListener("visibilitychange", () => {
           if (document.hidden && cameraStream) stopCamera();
         });

@@ -1,0 +1,2998 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>ระบบตรวจข้อสอบด้วยกล้อง</title>
+    <style>
+      :root {
+        --primary: #4f46e5;
+        --primary-dark: #4338ca;
+        --primary-light: #818cf8;
+        --secondary: #0ea5e9;
+        --bg: #f1f5f9;
+        --card: #ffffff;
+        --text: #1e293b;
+        --text-muted: #64748b;
+        --border: #e2e8f0;
+        --success: #10b981;
+        --danger: #ef4444;
+        --warning: #f59e0b;
+        --shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+        --shadow-lg:
+          0 10px 15px -3px rgba(0, 0, 0, 0.1),
+          0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --radius: 12px;
+        --radius-sm: 8px;
+      }
+      [data-theme="dark"] {
+        --bg: #0f172a;
+        --card: #1e293b;
+        --text: #f1f5f9;
+        --text-muted: #94a3b8;
+        --border: #334155;
+        --shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
+      body {
+        font-family:
+          "Segoe UI",
+          "Sarabun",
+          system-ui,
+          -apple-system,
+          sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.6;
+        min-height: 100vh;
+        transition:
+          background 0.3s,
+          color 0.3s;
+      }
+      /* Header */
+      .header {
+        background: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--secondary) 100%
+        );
+        color: #fff;
+        padding: 16px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        box-shadow: var(--shadow-lg);
+      }
+      .header-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+      }
+      .header h1 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        line-height: 1.3;
+      }
+      .header p {
+        font-size: 0.78rem;
+        opacity: 0.9;
+        margin-top: 2px;
+      }
+      .theme-toggle {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: #fff;
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        font-size: 1.2rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition: background 0.2s;
+      }
+      .theme-toggle:active {
+        background: rgba(255, 255, 255, 0.35);
+      }
+      /* Nav tabs */
+      .nav-tabs {
+        display: flex;
+        background: var(--card);
+        overflow-x: auto;
+        scrollbar-width: none;
+        border-bottom: 1px solid var(--border);
+        position: sticky;
+        top: 74px;
+        z-index: 99;
+      }
+      .nav-tabs::-webkit-scrollbar {
+        display: none;
+      }
+      .nav-tab {
+        flex: 1;
+        min-width: 90px;
+        padding: 12px 8px;
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        font-size: 0.82rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 3px;
+        border-bottom: 3px solid transparent;
+        transition: all 0.2s;
+        white-space: nowrap;
+        font-family: inherit;
+      }
+      .nav-tab .icon {
+        font-size: 1.2rem;
+      }
+      .nav-tab.active {
+        color: var(--primary);
+        border-bottom-color: var(--primary);
+        background: rgba(79, 70, 229, 0.06);
+      }
+      /* Main content */
+      .main {
+        padding: 16px;
+        max-width: 900px;
+        margin: 0 auto;
+        padding-bottom: 40px;
+      }
+      .section {
+        display: none;
+        animation: fadeIn 0.25s ease;
+      }
+      .section.active {
+        display: block;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      .section-title {
+        font-size: 1.15rem;
+        font-weight: 700;
+        margin-bottom: 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      /* Cards */
+      .card {
+        background: var(--card);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 16px;
+        margin-bottom: 14px;
+        border: 1px solid var(--border);
+      }
+      .card-title {
+        font-size: 1rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      /* Stats grid */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+      .stat-card {
+        background: var(--card);
+        border-radius: var(--radius);
+        padding: 16px;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+        text-align: center;
+      }
+      .stat-card .stat-icon {
+        font-size: 1.6rem;
+        margin-bottom: 4px;
+      }
+      .stat-card .stat-value {
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: var(--primary);
+        line-height: 1.2;
+      }
+      .stat-card .stat-label {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        margin-top: 2px;
+      }
+      /* Buttons */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 12px 18px;
+        border-radius: var(--radius-sm);
+        border: none;
+        font-size: 0.92rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.15s;
+        font-family: inherit;
+        background: var(--primary);
+        color: #fff;
+        line-height: 1.2;
+      }
+      .btn:active {
+        transform: scale(0.97);
+      }
+      .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .btn-block {
+        width: 100%;
+      }
+      .btn-secondary {
+        background: var(--secondary);
+      }
+      .btn-outline {
+        background: transparent;
+        color: var(--primary);
+        border: 1.5px solid var(--primary);
+      }
+      .btn-danger {
+        background: var(--danger);
+      }
+      .btn-success {
+        background: var(--success);
+      }
+      .btn-warning {
+        background: var(--warning);
+        color: #fff;
+      }
+      .btn-sm {
+        padding: 8px 12px;
+        font-size: 0.82rem;
+      }
+      .btn-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .btn-row .btn {
+        flex: 1;
+        min-width: 120px;
+      }
+      /* Forms */
+      .form-group {
+        margin-bottom: 14px;
+      }
+      .form-group label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 6px;
+        color: var(--text);
+      }
+      .form-group label .req {
+        color: var(--danger);
+      }
+      .form-control {
+        width: 100%;
+        padding: 11px 12px;
+        border: 1.5px solid var(--border);
+        border-radius: var(--radius-sm);
+        font-size: 0.92rem;
+        font-family: inherit;
+        background: var(--card);
+        color: var(--text);
+        transition: border 0.2s;
+      }
+      .form-control:focus {
+        outline: none;
+        border-color: var(--primary);
+      }
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      /* Answer grid */
+      .answer-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 10px;
+      }
+      .answer-item {
+        background: var(--bg);
+        border-radius: var(--radius-sm);
+        padding: 10px;
+        border: 1px solid var(--border);
+      }
+      .answer-item .q-num {
+        font-size: 0.82rem;
+        font-weight: 700;
+        margin-bottom: 6px;
+        color: var(--text-muted);
+      }
+      .answer-options {
+        display: flex;
+        gap: 5px;
+        flex-wrap: wrap;
+      }
+      .opt-btn {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        border: 1.5px solid var(--border);
+        background: var(--card);
+        color: var(--text-muted);
+        font-weight: 700;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.15s;
+        font-family: inherit;
+      }
+      .opt-btn.selected {
+        background: var(--primary);
+        color: #fff;
+        border-color: var(--primary);
+        transform: scale(1.05);
+      }
+      /* Exam list */
+      .exam-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px;
+        background: var(--bg);
+        border-radius: var(--radius-sm);
+        margin-bottom: 10px;
+        border: 1px solid var(--border);
+        gap: 10px;
+      }
+      .exam-item .exam-info {
+        flex: 1;
+        min-width: 0;
+      }
+      .exam-item .exam-name {
+        font-weight: 700;
+        font-size: 0.95rem;
+        margin-bottom: 2px;
+      }
+      .exam-item .exam-meta {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+      }
+      .exam-item .exam-actions {
+        display: flex;
+        gap: 5px;
+        flex-shrink: 0;
+      }
+      .icon-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        background: var(--card);
+        cursor: pointer;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.15s;
+        color: var(--text);
+      }
+      .icon-btn:active {
+        transform: scale(0.92);
+      }
+      .icon-btn.danger {
+        color: var(--danger);
+      }
+      /* Modal */
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        justify-content: center;
+        align-items: flex-end;
+        padding: 0;
+        animation: fadeIn 0.2s;
+      }
+      .modal-overlay.active {
+        display: flex;
+      }
+      .modal {
+        background: var(--card);
+        border-radius: var(--radius) var(--radius) 0 0;
+        width: 100%;
+        max-width: 600px;
+        max-height: 92vh;
+        overflow-y: auto;
+        padding: 20px;
+        animation: slideUp 0.3s ease;
+      }
+      @keyframes slideUp {
+        from {
+          transform: translateY(100%);
+        }
+        to {
+          transform: translateY(0);
+        }
+      }
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+        position: sticky;
+        top: -20px;
+        background: var(--card);
+        padding-top: 4px;
+        padding-bottom: 8px;
+        z-index: 2;
+      }
+      .modal-header h3 {
+        font-size: 1.1rem;
+        font-weight: 700;
+      }
+      .modal-close {
+        background: none;
+        border: none;
+        font-size: 1.6rem;
+        cursor: pointer;
+        color: var(--text-muted);
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+      }
+      .modal-close:active {
+        background: var(--bg);
+      }
+      /* Toast */
+      .toast-container {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 2000;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        width: calc(100% - 40px);
+        max-width: 400px;
+        pointer-events: none;
+      }
+      .toast {
+        background: var(--text);
+        color: var(--card);
+        padding: 12px 16px;
+        border-radius: var(--radius-sm);
+        box-shadow: var(--shadow-lg);
+        font-size: 0.88rem;
+        font-weight: 600;
+        animation: toastIn 0.3s ease;
+        pointer-events: auto;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .toast.success {
+        background: var(--success);
+        color: #fff;
+      }
+      .toast.error {
+        background: var(--danger);
+        color: #fff;
+      }
+      .toast.warning {
+        background: var(--warning);
+        color: #fff;
+      }
+      @keyframes toastIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      /* Camera */
+      .camera-container {
+        position: relative;
+        width: 100%;
+        background: #000;
+        border-radius: var(--radius);
+        overflow: hidden;
+        aspect-ratio: 3/4;
+        max-height: 70vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      #cameraVideo {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: none;
+      }
+      #cameraVideo.active {
+        display: block;
+      }
+      .camera-placeholder {
+        color: #94a3b8;
+        text-align: center;
+        padding: 20px;
+        font-size: 0.9rem;
+      }
+      .camera-overlay {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        display: none;
+      }
+      .camera-overlay.active {
+        display: block;
+      }
+      .camera-frame {
+        position: absolute;
+        top: 8%;
+        left: 6%;
+        right: 6%;
+        bottom: 8%;
+        border: 2px dashed rgba(255, 255, 255, 0.7);
+        border-radius: 12px;
+      }
+      .camera-frame::before,
+      .camera-frame::after {
+        content: "";
+        position: absolute;
+        width: 28px;
+        height: 28px;
+        border-color: #4f46e5;
+        border-style: solid;
+      }
+      .camera-frame::before {
+        top: -2px;
+        left: -2px;
+        border-width: 4px 0 0 4px;
+        border-radius: 12px 0 0 0;
+      }
+      .camera-frame::after {
+        bottom: -2px;
+        right: -2px;
+        border-width: 0 4px 4px 0;
+        border-radius: 0 0 12px 0;
+      }
+      .camera-hint {
+        position: absolute;
+        bottom: 12px;
+        left: 0;
+        right: 0;
+        text-align: center;
+        color: #fff;
+        font-size: 0.8rem;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+      }
+      /* Preview */
+      .preview-wrap {
+        position: relative;
+      }
+      .preview-img {
+        width: 100%;
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        background: #000;
+      }
+      /* Loading */
+      .loading-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 3000;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        color: #fff;
+      }
+      .loading-overlay.active {
+        display: flex;
+      }
+      .spinner {
+        width: 48px;
+        height: 48px;
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-top-color: #fff;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .loading-text {
+        font-size: 0.95rem;
+        font-weight: 600;
+      }
+      /* Result table */
+      .result-table-wrap {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin-top: 10px;
+      }
+      table.result-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+        min-width: 400px;
+      }
+      table.result-table th,
+      table.result-table td {
+        padding: 9px 8px;
+        text-align: center;
+        border-bottom: 1px solid var(--border);
+      }
+      table.result-table th {
+        background: var(--bg);
+        font-weight: 700;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        position: sticky;
+        top: 0;
+      }
+      table.result-table tr.correct td {
+        background: rgba(16, 185, 129, 0.08);
+      }
+      table.result-table tr.wrong td {
+        background: rgba(239, 68, 68, 0.08);
+      }
+      table.result-table tr.unanswered td {
+        background: rgba(245, 158, 11, 0.08);
+      }
+      table.result-table tr.ambiguous td {
+        background: rgba(139, 92, 246, 0.1);
+      }
+      .badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 20px;
+        font-size: 0.72rem;
+        font-weight: 700;
+      }
+      .badge-correct {
+        background: rgba(16, 185, 129, 0.15);
+        color: var(--success);
+      }
+      .badge-wrong {
+        background: rgba(239, 68, 68, 0.15);
+        color: var(--danger);
+      }
+      .badge-unanswered {
+        background: rgba(245, 158, 11, 0.15);
+        color: var(--warning);
+      }
+      .badge-ambiguous {
+        background: rgba(139, 92, 246, 0.15);
+        color: #8b5cf6;
+      }
+      /* Summary score */
+      .score-summary {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        margin-bottom: 14px;
+      }
+      .score-item {
+        background: var(--bg);
+        border-radius: var(--radius-sm);
+        padding: 12px;
+        text-align: center;
+        border: 1px solid var(--border);
+      }
+      .score-item .score-val {
+        font-size: 1.3rem;
+        font-weight: 800;
+      }
+      .score-item .score-lbl {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+      }
+      .score-item.good .score-val {
+        color: var(--success);
+      }
+      .score-item.bad .score-val {
+        color: var(--danger);
+      }
+      .score-item.warn .score-val {
+        color: var(--warning);
+      }
+      .score-item.info .score-val {
+        color: var(--primary);
+      }
+      /* Empty state */
+      .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        color: var(--text-muted);
+      }
+      .empty-state .icon {
+        font-size: 3rem;
+        margin-bottom: 10px;
+        opacity: 0.6;
+      }
+      .empty-state p {
+        font-size: 0.9rem;
+      }
+      /* Answer sheet preview */
+      .answer-sheet {
+        background: #fff;
+        color: #000;
+        padding: 20px;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--border);
+        font-family: "Segoe UI", sans-serif;
+      }
+      .sheet-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 14px;
+        border-bottom: 2px solid #000;
+        padding-bottom: 10px;
+        gap: 10px;
+      }
+      .sheet-header .sheet-title {
+        font-size: 1rem;
+        font-weight: 800;
+      }
+      .sheet-header .sheet-sub {
+        font-size: 0.78rem;
+        margin-top: 2px;
+      }
+      .sheet-fields {
+        margin-bottom: 12px;
+        font-size: 0.8rem;
+      }
+      .sheet-fields .field-row {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 6px;
+        align-items: center;
+      }
+      .sheet-fields .field-row span {
+        font-weight: 700;
+        white-space: nowrap;
+      }
+      .sheet-fields .field-line {
+        flex: 1;
+        border-bottom: 1px dotted #666;
+        height: 18px;
+      }
+      .sheet-bubbles {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+        gap: 8px 6px;
+      }
+      .bubble-q {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.78rem;
+      }
+      .bubble-q .qno {
+        font-weight: 700;
+        width: 22px;
+        text-align: right;
+        flex-shrink: 0;
+      }
+      .bubble-opt {
+        width: 20px;
+        height: 20px;
+        border: 1.5px solid #333;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.62rem;
+        font-weight: 700;
+        flex-shrink: 0;
+      }
+      .corner-mark {
+        position: absolute;
+        width: 14px;
+        height: 14px;
+        background: #000;
+        border-radius: 2px;
+      }
+      .sheet-wrap {
+        position: relative;
+      }
+      .corner-mark.tl {
+        top: 6px;
+        left: 6px;
+      }
+      .corner-mark.tr {
+        top: 6px;
+        right: 6px;
+      }
+      .corner-mark.bl {
+        bottom: 6px;
+        left: 6px;
+      }
+      .corner-mark.br {
+        bottom: 6px;
+        right: 6px;
+      }
+      /* Search */
+      .search-box {
+        position: relative;
+        margin-bottom: 12px;
+      }
+      .search-box input {
+        padding-left: 38px;
+      }
+      .search-box .search-icon {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+        font-size: 1rem;
+      }
+      /* Filter row */
+      .filter-row {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 12px;
+        flex-wrap: wrap;
+      }
+      .filter-row select {
+        flex: 1;
+        min-width: 140px;
+      }
+      /* Responsive */
+      @media (min-width: 640px) {
+        .stats-grid {
+          grid-template-columns: repeat(4, 1fr);
+        }
+        .modal-overlay {
+          align-items: center;
+          padding: 20px;
+        }
+        .modal {
+          border-radius: var(--radius);
+          max-height: 88vh;
+        }
+        .header h1 {
+          font-size: 1.35rem;
+        }
+        .header p {
+          font-size: 0.85rem;
+        }
+      }
+      @media print {
+        body * {
+          visibility: hidden;
+        }
+        #printArea,
+        #printArea * {
+          visibility: visible;
+        }
+        #printArea {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+        }
+        .no-print {
+          display: none !important;
+        }
+      }
+      /* Utility */
+      .hidden {
+        display: none !important;
+      }
+      .text-muted {
+        color: var(--text-muted);
+      }
+      .text-center {
+        text-align: center;
+      }
+      .mt-2 {
+        margin-top: 8px;
+      }
+      .mb-2 {
+        margin-bottom: 8px;
+      }
+      .flex-between {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .gap-2 {
+        gap: 8px;
+      }
+      .divider {
+        height: 1px;
+        background: var(--border);
+        margin: 14px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header">
+      <div class="header-top">
+        <div>
+          <h1>📷 ระบบตรวจข้อสอบด้วยกล้อง</h1>
+          <p>สร้างชุดข้อสอบ สแกนกระดาษคำตอบ และตรวจคะแนน</p>
+        </div>
+        <button class="theme-toggle" id="themeToggle" title="สลับโหมด">
+          🌙
+        </button>
+      </div>
+    </header>
+
+    <!-- Nav tabs -->
+    <nav class="nav-tabs" id="navTabs">
+      <button class="nav-tab active" data-section="dashboard">
+        <span class="icon">📊</span>แดชบอร์ด
+      </button>
+      <button class="nav-tab" data-section="exams">
+        <span class="icon">📝</span>ชุดข้อสอบ
+      </button>
+      <button class="nav-tab" data-section="scan">
+        <span class="icon">📷</span>ตรวจด้วยกล้อง
+      </button>
+      <button class="nav-tab" data-section="results">
+        <span class="icon">📋</span>ผลการตรวจ
+      </button>
+      <button class="nav-tab" data-section="settings">
+        <span class="icon">⚙️</span>ตั้งค่า
+      </button>
+    </nav>
+
+    <main class="main">
+      <!-- ========== DASHBOARD ========== -->
+      <section class="section active" id="section-dashboard">
+        <div class="stats-grid" id="statsGrid">
+          <div class="stat-card">
+            <div class="stat-icon">📝</div>
+            <div class="stat-value" id="statExams">0</div>
+            <div class="stat-label">ชุดข้อสอบ</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">🔍</div>
+            <div class="stat-value" id="statScans">0</div>
+            <div class="stat-label">ครั้งที่ตรวจ</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">👥</div>
+            <div class="stat-value" id="statStudents">0</div>
+            <div class="stat-label">ผู้เข้าสอบ</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">⭐</div>
+            <div class="stat-value" id="statAvg">0</div>
+            <div class="stat-label">คะแนนเฉลี่ย</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📝 ชุดข้อสอบล่าสุด</div>
+          <div id="latestExams"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📋 ผลการตรวจล่าสุด</div>
+          <div id="latestResults"></div>
+        </div>
+      </section>
+
+      <!-- ========== EXAMS ========== -->
+      <section class="section" id="section-exams">
+        <div class="flex-between mb-2">
+          <h2 class="section-title" style="margin: 0">📝 ชุดข้อสอบ</h2>
+          <button class="btn btn-sm" id="btnAddExam">➕ สร้างชุดข้อสอบ</button>
+        </div>
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input
+            type="text"
+            class="form-control"
+            id="examSearch"
+            placeholder="ค้นหาชุดข้อสอบ..."
+          />
+        </div>
+        <div id="examList"></div>
+      </section>
+
+      <!-- ========== SCAN ========== -->
+      <section class="section" id="section-scan">
+        <h2 class="section-title">📷 ตรวจข้อสอบด้วยกล้อง</h2>
+
+        <div class="card">
+          <div class="form-group">
+            <label>เลือกชุดข้อสอบ <span class="req">*</span></label>
+            <select class="form-control" id="scanExamSelect">
+              <option value="">-- เลือกชุดข้อสอบ --</option>
+            </select>
+          </div>
+          <div
+            id="scanExamInfo"
+            class="text-muted"
+            style="font-size: 0.85rem"
+          ></div>
+        </div>
+
+        <!-- Camera area -->
+        <div class="card" id="cameraCard">
+          <div class="card-title">📸 ถ่ายภาพกระดาษคำตอบ</div>
+          <div class="camera-container">
+            <video id="cameraVideo" autoplay playsinline muted></video>
+            <div class="camera-placeholder" id="cameraPlaceholder">
+              <div style="font-size: 2.5rem">📷</div>
+              <p>กดปุ่ม "เปิดกล้อง" เพื่อเริ่ม<br />หรือเลือกภาพจากอุปกรณ์</p>
+            </div>
+            <div class="camera-overlay" id="cameraOverlay">
+              <div class="camera-frame"></div>
+              <div class="camera-hint">วางกระดาษคำตอบให้อยู่ในกรอบ</div>
+            </div>
+          </div>
+          <div class="btn-row mt-2">
+            <button class="btn" id="btnOpenCamera">📷 เปิดกล้อง</button>
+            <button class="btn btn-secondary" id="btnSwitchCamera" disabled>
+              🔄 สลับกล้อง
+            </button>
+          </div>
+          <div class="btn-row mt-2">
+            <button class="btn btn-success" id="btnCapture" disabled>
+              📸 ถ่ายภาพ
+            </button>
+            <button class="btn btn-outline" id="btnPickImage">
+              🖼️ เลือกภาพ
+            </button>
+          </div>
+          <input type="file" id="fileInput" accept="image/*" class="hidden" />
+        </div>
+
+        <!-- Preview & process -->
+        <div class="card hidden" id="previewCard">
+          <div class="card-title">🖼️ ตัวอย่างภาพ</div>
+          <div class="preview-wrap">
+            <img id="previewImg" class="preview-img" alt="ตัวอย่างภาพ" />
+          </div>
+          <div class="btn-row mt-2">
+            <button class="btn btn-success" id="btnProcess">
+              🔍 ประมวลผลอ่านคำตอบ
+            </button>
+            <button class="btn btn-outline" id="btnRetake">🔄 สแกนใหม่</button>
+          </div>
+        </div>
+
+        <!-- Result review -->
+        <div class="card hidden" id="reviewCard">
+          <div class="card-title">✅ ตรวจสอบคำตอบ</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>ชื่อนักเรียน</label>
+              <input
+                type="text"
+                class="form-control"
+                id="studentName"
+                placeholder="ชื่อ-นามสกุล"
+              />
+            </div>
+            <div class="form-group">
+              <label>รหัสนักเรียน</label>
+              <input
+                type="text"
+                class="form-control"
+                id="studentId"
+                placeholder="รหัส"
+              />
+            </div>
+          </div>
+          <div class="result-table-wrap">
+            <table class="result-table" id="reviewTable">
+              <thead>
+                <tr>
+                  <th>ข้อ</th>
+                  <th>คำตอบ</th>
+                  <th>เฉลย</th>
+                  <th>ผล</th>
+                </tr>
+              </thead>
+              <tbody id="reviewTableBody"></tbody>
+            </table>
+          </div>
+          <div class="btn-row mt-2">
+            <button class="btn btn-success" id="btnConfirmSave">
+              💾 ยืนยันบันทึกผล
+            </button>
+            <button class="btn btn-outline" id="btnCancelReview">ยกเลิก</button>
+          </div>
+        </div>
+
+        <!-- Score display -->
+        <div class="card hidden" id="scoreCard">
+          <div class="card-title">🏆 ผลคะแนน</div>
+          <div class="score-summary" id="scoreSummary"></div>
+          <div id="scoreDetail"></div>
+        </div>
+      </section>
+
+      <!-- ========== RESULTS ========== -->
+      <section class="section" id="section-results">
+        <h2 class="section-title">📋 ผลการตรวจ</h2>
+        <div class="filter-row">
+          <select class="form-control" id="resultFilterExam">
+            <option value="">ทุกชุดข้อสอบ</option>
+          </select>
+          <input
+            type="text"
+            class="form-control"
+            id="resultSearch"
+            placeholder="ค้นหาชื่อนักเรียน..."
+          />
+        </div>
+        <div class="btn-row mb-2">
+          <button class="btn btn-sm btn-outline" id="btnExportCSV">
+            📤 ส่งออก CSV
+          </button>
+          <button class="btn btn-sm btn-outline" id="btnPrintResults">
+            🖨️ พิมพ์รายงาน
+          </button>
+        </div>
+        <div id="resultList"></div>
+      </section>
+
+      <!-- ========== SETTINGS ========== -->
+      <section class="section" id="section-settings">
+        <h2 class="section-title">⚙️ ตั้งค่า</h2>
+
+        <div class="card">
+          <div class="card-title">🎨 รูปแบบ</div>
+          <div class="form-group">
+            <label>โหมดสี</label>
+            <select class="form-control" id="settingTheme">
+              <option value="light">สว่าง</option>
+              <option value="dark">มืด</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📷 กล้อง</div>
+          <div class="form-group">
+            <label>ความละเอียดภาพ</label>
+            <select class="form-control" id="settingResolution">
+              <option value="1280">ปกติ (1280px)</option>
+              <option value="1920" selected>สูง (1920px)</option>
+              <option value="2560">สูงมาก (2560px)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>
+              <input type="checkbox" id="settingAutoProcess" checked />
+              ประมวลผลอัตโนมัติหลังถ่ายภาพ
+            </label>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">💾 ข้อมูล</div>
+          <div class="btn-row">
+            <button class="btn btn-outline" id="btnExportAll">
+              📤 ส่งออกข้อมูลทั้งหมด (JSON)
+            </button>
+            <button class="btn btn-danger" id="btnClearAll">
+              🗑️ ล้างข้อมูลทั้งหมด
+            </button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">ℹ️ เกี่ยวกับ</div>
+          <p class="text-muted" style="font-size: 0.85rem">
+            ระบบตรวจข้อสอบด้วยกล้อง v1.0<br />
+            ทำงานแบบหน้าเดียว (SPA) บันทึกข้อมูลใน LocalStorage<br />
+            รองรับ Android, iPhone และคอมพิวเตอร์
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <!-- Modal for exam form -->
+    <div class="modal-overlay" id="examModal">
+      <div class="modal">
+        <div class="modal-header">
+          <h3 id="examModalTitle">สร้างชุดข้อสอบ</h3>
+          <button class="modal-close" id="examModalClose">×</button>
+        </div>
+        <div class="form-group">
+          <label>ชื่อชุดข้อสอบ <span class="req">*</span></label>
+          <input
+            type="text"
+            class="form-control"
+            id="fExamName"
+            placeholder="เช่น สอบกลางภาค คณิตศาสตร์"
+          />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>รายวิชา</label>
+            <input
+              type="text"
+              class="form-control"
+              id="fExamSubject"
+              placeholder="คณิตศาสตร์"
+            />
+          </div>
+          <div class="form-group">
+            <label>รหัสวิชา</label>
+            <input
+              type="text"
+              class="form-control"
+              id="fExamCode"
+              placeholder="ค21101"
+            />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>ระดับชั้น</label>
+            <input
+              type="text"
+              class="form-control"
+              id="fExamLevel"
+              placeholder="ม.1"
+            />
+          </div>
+          <div class="form-group">
+            <label>คะแนนต่อข้อ</label>
+            <input
+              type="number"
+              class="form-control"
+              id="fExamPoints"
+              value="1"
+              min="0.5"
+              step="0.5"
+            />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>จำนวนข้อ <span class="req">*</span></label>
+            <input
+              type="number"
+              class="form-control"
+              id="fExamQuestions"
+              value="10"
+              min="1"
+              max="100"
+            />
+          </div>
+          <div class="form-group">
+            <label>จำนวนตัวเลือก</label>
+            <select class="form-control" id="fExamChoices">
+              <option value="4">4 ตัวเลือก (ก ข ค ง)</option>
+              <option value="5">5 ตัวเลือก (ก ข ค ง จ)</option>
+            </select>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <div class="flex-between mb-2">
+          <label style="font-weight: 700; font-size: 0.9rem">กำหนดเฉลย</label>
+          <button class="btn btn-sm btn-outline" id="btnRandomAnswer">
+            สุ่มเฉลย
+          </button>
+        </div>
+        <div class="answer-grid" id="answerGrid"></div>
+        <div class="btn-row mt-2">
+          <button class="btn btn-success btn-block" id="btnSaveExam">
+            💾 บันทึกชุดข้อสอบ
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal for exam detail -->
+    <div class="modal-overlay" id="detailModal">
+      <div class="modal">
+        <div class="modal-header">
+          <h3 id="detailModalTitle">รายละเอียดชุดข้อสอบ</h3>
+          <button class="modal-close" id="detailModalClose">×</button>
+        </div>
+        <div id="detailModalBody"></div>
+      </div>
+    </div>
+
+    <!-- Modal for answer sheet print -->
+    <div class="modal-overlay" id="printModal">
+      <div class="modal">
+        <div class="modal-header">
+          <h3>🖨️ ตัวอย่างกระดาษคำตอบ</h3>
+          <button class="modal-close" id="printModalClose">×</button>
+        </div>
+        <div id="printPreviewContainer"></div>
+        <div class="btn-row mt-2 no-print">
+          <button class="btn btn-success btn-block" id="btnDoPrint">
+            🖨️ พิมพ์กระดาษคำตอบ
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div class="loading-overlay" id="loadingOverlay">
+      <div class="spinner"></div>
+      <div class="loading-text" id="loadingText">กำลังประมวลผล...</div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Hidden print area -->
+    <div id="printArea" style="display: none"></div>
+
+    <script>
+      /* ============================================================
+   ระบบตรวจข้อสอบด้วยกล้อง - Single Page Application
+   ============================================================ */
+
+      // ---------- Constants ----------
+      const LS_KEYS = {
+        exams: "omr_exams",
+        results: "omr_results",
+        settings: "omr_settings",
+      };
+      const CHOICE_LABELS = ["ก", "ข", "ค", "ง", "จ"];
+
+      // ---------- State ----------
+      let exams = [];
+      let results = [];
+      let settings = { theme: "light", resolution: 1920, autoProcess: true };
+      let editingExamId = null;
+      let currentAnswerGrid = []; // array of selected index (0-4) or -1
+      let currentExamForGrid = null;
+      let currentScanExam = null;
+      let currentScanAnswers = [];
+      let currentScanImageData = null;
+      let cameraStream = null;
+      let facingMode = "environment";
+      let processingCanvas = document.createElement("canvas");
+      let lastScanResult = null;
+
+      // ---------- Utils ----------
+      function uid() {
+        return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+      }
+      function nowISO() {
+        return new Date().toISOString();
+      }
+      function formatDateTime(iso) {
+        if (!iso) return "-";
+        const d = new Date(iso);
+        const pad = (n) => String(n).padStart(2, "0");
+        return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+      }
+      function escapeHtml(str) {
+        if (str == null) return "";
+        return String(str).replace(
+          /[&<>"']/g,
+          (m) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            })[m],
+        );
+      }
+      function loadJSON(key, fallback) {
+        try {
+          const raw = localStorage.getItem(key);
+          return raw ? JSON.parse(raw) : fallback;
+        } catch (e) {
+          return fallback;
+        }
+      }
+      function saveJSON(key, val) {
+        try {
+          localStorage.setItem(key, JSON.stringify(val));
+        } catch (e) {
+          toast("ไม่สามารถบันทึกข้อมูลได้", "error");
+        }
+      }
+
+      function toast(msg, type = "info", duration = 2500) {
+        const container = document.getElementById("toastContainer");
+        const el = document.createElement("div");
+        el.className = "toast " + (type !== "info" ? type : "");
+        el.textContent = msg;
+        container.appendChild(el);
+        setTimeout(() => {
+          el.style.opacity = "0";
+          el.style.transition = "opacity 0.3s";
+          setTimeout(() => el.remove(), 300);
+        }, duration);
+      }
+
+      function showLoading(text = "กำลังประมวลผล...") {
+        document.getElementById("loadingText").textContent = text;
+        document.getElementById("loadingOverlay").classList.add("active");
+      }
+      function hideLoading() {
+        document.getElementById("loadingOverlay").classList.remove("active");
+      }
+
+      // ---------- Navigation ----------
+      function switchSection(name) {
+        document
+          .querySelectorAll(".section")
+          .forEach((s) => s.classList.remove("active"));
+        document
+          .querySelectorAll(".nav-tab")
+          .forEach((t) => t.classList.remove("active"));
+        const section = document.getElementById("section-" + name);
+        const tab = document.querySelector(`.nav-tab[data-section="${name}"]`);
+        if (section) section.classList.add("active");
+        if (tab) tab.classList.add("active");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        if (name === "dashboard") renderDashboard();
+        if (name === "exams") renderExamList();
+        if (name === "scan") renderScanSelect();
+        if (name === "results") renderResults();
+        if (name === "settings") renderSettings();
+      }
+
+      // ---------- Theme ----------
+      function applyTheme(theme) {
+        document.documentElement.setAttribute("data-theme", theme);
+        document.getElementById("themeToggle").textContent =
+          theme === "dark" ? "☀️" : "🌙";
+        settings.theme = theme;
+        saveJSON(LS_KEYS.settings, settings);
+        const sel = document.getElementById("settingTheme");
+        if (sel) sel.value = theme;
+      }
+
+      // ---------- Dashboard ----------
+      function renderDashboard() {
+        document.getElementById("statExams").textContent = exams.length;
+        document.getElementById("statScans").textContent = results.length;
+        const uniqueStudents = new Set(
+          results
+            .map((r) => (r.studentName || "") + "|" + (r.studentId || ""))
+            .filter((s) => s !== "|"),
+        );
+        document.getElementById("statStudents").textContent =
+          uniqueStudents.size;
+        const avg = results.length
+          ? (
+              results.reduce((s, r) => s + (r.score || 0), 0) / results.length
+            ).toFixed(1)
+          : "0";
+        document.getElementById("statAvg").textContent = avg;
+
+        const latestExamsEl = document.getElementById("latestExams");
+        const sortedExams = [...exams]
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+          .slice(0, 3);
+        if (sortedExams.length === 0) {
+          latestExamsEl.innerHTML =
+            '<div class="empty-state"><div class="icon">📝</div><p>ยังไม่มีชุดข้อสอบ</p></div>';
+        } else {
+          latestExamsEl.innerHTML = sortedExams
+            .map(
+              (e) =>
+                `<div class="exam-item">
+        <div class="exam-info">
+          <div class="exam-name">${escapeHtml(e.name)}</div>
+          <div class="exam-meta">${e.questions} ข้อ • ${e.choices} ตัวเลือก • ${e.pointsPerQuestion} คะแนน/ข้อ</div>
+        </div>
+        <div class="exam-actions">
+          <button class="icon-btn" onclick="goToScanWithExam('${e.id}')" title="ตรวจ">📷</button>
+        </div>
+      </div>`,
+            )
+            .join("");
+        }
+
+        const latestResultsEl = document.getElementById("latestResults");
+        const sortedResults = [...results]
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+          .slice(0, 5);
+        if (sortedResults.length === 0) {
+          latestResultsEl.innerHTML =
+            '<div class="empty-state"><div class="icon">📋</div><p>ยังไม่มีผลการตรวจ</p></div>';
+        } else {
+          latestResultsEl.innerHTML = sortedResults
+            .map((r) => {
+              const exam = exams.find((e) => e.id === r.examId);
+              const pct =
+                r.totalPossible > 0
+                  ? ((r.score / r.totalPossible) * 100).toFixed(1)
+                  : "0";
+              return `<div class="exam-item">
+        <div class="exam-info">
+          <div class="exam-name">${escapeHtml(r.studentName || "ไม่ระบุชื่อ")}</div>
+          <div class="exam-meta">${escapeHtml(exam ? exam.name : "ไม่ทราบชุด")} • ${r.score}/${r.totalPossible} (${pct}%)</div>
+        </div>
+        <div class="exam-actions">
+          <span class="badge ${r.score >= r.totalPossible * 0.5 ? "badge-correct" : "badge-wrong"}">${pct}%</span>
+        </div>
+      </div>`;
+            })
+            .join("");
+        }
+      }
+
+      window.goToScanWithExam = function (examId) {
+        switchSection("scan");
+        const sel = document.getElementById("scanExamSelect");
+        sel.value = examId;
+        onScanExamChange();
+      };
+
+      // ---------- Exams ----------
+      function renderExamList() {
+        const q = document
+          .getElementById("examSearch")
+          .value.trim()
+          .toLowerCase();
+        const list = exams.filter((e) => {
+          if (!q) return true;
+          return (e.name + " " + e.subject + " " + e.code + " " + e.level)
+            .toLowerCase()
+            .includes(q);
+        });
+        const container = document.getElementById("examList");
+        if (list.length === 0) {
+          container.innerHTML =
+            '<div class="empty-state"><div class="icon">📝</div><p>ยังไม่มีชุดข้อสอบ<br>กด "สร้างชุดข้อสอบ" เพื่อเริ่มต้น</p></div>';
+          return;
+        }
+        container.innerHTML = list
+          .map(
+            (e) => `
+    <div class="exam-item">
+      <div class="exam-info">
+        <div class="exam-name">${escapeHtml(e.name)}</div>
+        <div class="exam-meta">
+          ${escapeHtml(e.subject || "-")} ${e.code ? "• " + escapeHtml(e.code) : ""} ${e.level ? "• " + escapeHtml(e.level) : ""}<br>
+          ${e.questions} ข้อ • ${e.choices} ตัวเลือก • ${e.pointsPerQuestion} คะแนน/ข้อ • รวม ${(e.questions * e.pointsPerQuestion).toFixed(1)} คะแนน
+        </div>
+      </div>
+      <div class="exam-actions">
+        <button class="icon-btn" onclick="editExam('${e.id}')" title="แก้ไข">✏️</button>
+        <button class="icon-btn" onclick="copyExam('${e.id}')" title="คัดลอก">📋</button>
+        <button class="icon-btn" onclick="showExamDetail('${e.id}')" title="รายละเอียด">ℹ️</button>
+        <button class="icon-btn" onclick="printAnswerSheet('${e.id}')" title="กระดาษคำตอบ">🖨️</button>
+        <button class="icon-btn" onclick="goToScanWithExam('${e.id}')" title="ตรวจ">📷</button>
+        <button class="icon-btn danger" onclick="deleteExam('${e.id}')" title="ลบ">🗑️</button>
+      </div>
+    </div>
+  `,
+          )
+          .join("");
+      }
+
+      function openExamModal(exam = null) {
+        editingExamId = exam ? exam.id : null;
+        document.getElementById("examModalTitle").textContent = exam
+          ? "แก้ไขชุดข้อสอบ"
+          : "สร้างชุดข้อสอบ";
+        document.getElementById("fExamName").value = exam ? exam.name : "";
+        document.getElementById("fExamSubject").value = exam
+          ? exam.subject
+          : "";
+        document.getElementById("fExamCode").value = exam ? exam.code : "";
+        document.getElementById("fExamLevel").value = exam ? exam.level : "";
+        document.getElementById("fExamPoints").value = exam
+          ? exam.pointsPerQuestion
+          : 1;
+        document.getElementById("fExamQuestions").value = exam
+          ? exam.questions
+          : 10;
+        document.getElementById("fExamChoices").value = exam ? exam.choices : 4;
+        const qCount = exam ? exam.questions : 10;
+        const choices = exam ? exam.choices : 4;
+        currentAnswerGrid = exam
+          ? [...exam.answerKey]
+          : new Array(qCount).fill(-1);
+        currentExamForGrid = { questions: qCount, choices };
+        renderAnswerGrid();
+        document.getElementById("examModal").classList.add("active");
+      }
+
+      function closeExamModal() {
+        document.getElementById("examModal").classList.remove("active");
+        editingExamId = null;
+      }
+
+      function renderAnswerGrid() {
+        const qCount =
+          parseInt(document.getElementById("fExamQuestions").value) || 1;
+        const choices =
+          parseInt(document.getElementById("fExamChoices").value) || 4;
+        if (currentAnswerGrid.length !== qCount) {
+          const old = currentAnswerGrid;
+          currentAnswerGrid = new Array(qCount).fill(-1);
+          for (let i = 0; i < Math.min(old.length, qCount); i++)
+            currentAnswerGrid[i] = old[i];
+        }
+        const grid = document.getElementById("answerGrid");
+        grid.innerHTML = "";
+        for (let i = 0; i < qCount; i++) {
+          const item = document.createElement("div");
+          item.className = "answer-item";
+          let optsHtml = "";
+          for (let c = 0; c < choices; c++) {
+            optsHtml += `<button type="button" class="opt-btn ${currentAnswerGrid[i] === c ? "selected" : ""}" data-q="${i}" data-c="${c}">${CHOICE_LABELS[c]}</button>`;
+          }
+          item.innerHTML = `<div class="q-num">ข้อ ${i + 1}</div><div class="answer-options">${optsHtml}</div>`;
+          grid.appendChild(item);
+        }
+        grid.querySelectorAll(".opt-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const qi = parseInt(btn.dataset.q);
+            const ci = parseInt(btn.dataset.c);
+            currentAnswerGrid[qi] = currentAnswerGrid[qi] === ci ? -1 : ci;
+            renderAnswerGrid();
+          });
+        });
+      }
+
+      function saveExam() {
+        const name = document.getElementById("fExamName").value.trim();
+        if (!name) {
+          toast("กรุณากรอกชื่อชุดข้อสอบ", "error");
+          return;
+        }
+        const qCount = parseInt(
+          document.getElementById("fExamQuestions").value,
+        );
+        const choices = parseInt(document.getElementById("fExamChoices").value);
+        const points =
+          parseFloat(document.getElementById("fExamPoints").value) || 1;
+        if (qCount < 1 || qCount > 100) {
+          toast("จำนวนข้อต้องอยู่ระหว่าง 1-100", "error");
+          return;
+        }
+        // Check all answers set
+        const missing = currentAnswerGrid.findIndex((a) => a < 0);
+        if (missing !== -1) {
+          toast(`กรุณากำหนดเฉลยข้อ ${missing + 1}`, "error");
+          return;
+        }
+        const data = {
+          name,
+          subject: document.getElementById("fExamSubject").value.trim(),
+          code: document.getElementById("fExamCode").value.trim(),
+          level: document.getElementById("fExamLevel").value.trim(),
+          questions: qCount,
+          choices,
+          pointsPerQuestion: points,
+          answerKey: [...currentAnswerGrid],
+          createdAt: nowISO(),
+          updatedAt: nowISO(),
+        };
+        if (editingExamId) {
+          const idx = exams.findIndex((e) => e.id === editingExamId);
+          if (idx !== -1) {
+            data.id = editingExamId;
+            data.createdAt = exams[idx].createdAt;
+            exams[idx] = data;
+          }
+          toast("อัปเดตชุดข้อสอบแล้ว", "success");
+        } else {
+          data.id = uid();
+          exams.push(data);
+          toast("สร้างชุดข้อสอบแล้ว", "success");
+        }
+        saveJSON(LS_KEYS.exams, exams);
+        closeExamModal();
+        renderExamList();
+        renderDashboard();
+      }
+
+      window.editExam = function (id) {
+        const e = exams.find((x) => x.id === id);
+        if (e) openExamModal(e);
+      };
+      window.copyExam = function (id) {
+        const e = exams.find((x) => x.id === id);
+        if (!e) return;
+        const copy = JSON.parse(JSON.stringify(e));
+        copy.id = uid();
+        copy.name = e.name + " (คัดลอก)";
+        copy.createdAt = nowISO();
+        copy.updatedAt = nowISO();
+        exams.push(copy);
+        saveJSON(LS_KEYS.exams, exams);
+        renderExamList();
+        renderDashboard();
+        toast("คัดลอกชุดข้อสอบแล้ว", "success");
+      };
+      window.deleteExam = function (id) {
+        if (!confirm("ต้องการลบชุดข้อสอบนี้ใช่หรือไม่?")) return;
+        exams = exams.filter((e) => e.id !== id);
+        saveJSON(LS_KEYS.exams, exams);
+        renderExamList();
+        renderDashboard();
+        toast("ลบชุดข้อสอบแล้ว", "success");
+      };
+
+      window.showExamDetail = function (id) {
+        const e = exams.find((x) => x.id === id);
+        if (!e) return;
+        document.getElementById("detailModalTitle").textContent = e.name;
+        let answerRows = "";
+        for (let i = 0; i < e.questions; i++) {
+          answerRows += `<span style="display:inline-block;background:var(--bg);border-radius:6px;padding:4px 10px;margin:3px;font-size:0.82rem;border:1px solid var(--border);">
+      <b>${i + 1}</b>: ${CHOICE_LABELS[e.answerKey[i]]}
+    </span>`;
+        }
+        document.getElementById("detailModalBody").innerHTML = `
+    <div class="form-group"><label>รายวิชา</label><div>${escapeHtml(e.subject || "-")}</div></div>
+    <div class="form-row">
+      <div class="form-group"><label>รหัสวิชา</label><div>${escapeHtml(e.code || "-")}</div></div>
+      <div class="form-group"><label>ระดับชั้น</label><div>${escapeHtml(e.level || "-")}</div></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>จำนวนข้อ</label><div>${e.questions} ข้อ</div></div>
+      <div class="form-group"><label>ตัวเลือก</label><div>${e.choices} ตัวเลือก</div></div>
+    </div>
+    <div class="form-group"><label>คะแนนต่อข้อ</label><div>${e.pointsPerQuestion} คะแนน</div></div>
+    <div class="form-group"><label>คะแนนเต็ม</label><div>${(e.questions * e.pointsPerQuestion).toFixed(1)} คะแนน</div></div>
+    <div class="form-group"><label>เฉลย</label><div>${answerRows}</div></div>
+    <div class="btn-row mt-2">
+      <button class="btn btn-outline" onclick="printAnswerSheet('${e.id}');document.getElementById('detailModal').classList.remove('active');">🖨️ สร้างกระดาษคำตอบ</button>
+      <button class="btn" onclick="editExam('${e.id}');document.getElementById('detailModal').classList.remove('active');">✏️ แก้ไข</button>
+    </div>
+  `;
+        document.getElementById("detailModal").classList.add("active");
+      };
+
+      // ---------- Answer Sheet ----------
+      window.printAnswerSheet = function (id) {
+        const e = exams.find((x) => x.id === id);
+        if (!e) return;
+        const choices = e.choices;
+        let bubblesHtml = "";
+        for (let i = 0; i < e.questions; i++) {
+          let opts = "";
+          for (let c = 0; c < choices; c++) {
+            opts += `<span class="bubble-opt">${CHOICE_LABELS[c]}</span>`;
+          }
+          bubblesHtml += `<div class="bubble-q"><span class="qno">${i + 1}.</span>${opts}</div>`;
+        }
+        const html = `
+    <div class="sheet-wrap answer-sheet" id="sheetContent">
+      <div class="corner-mark tl"></div>
+      <div class="corner-mark tr"></div>
+      <div class="corner-mark bl"></div>
+      <div class="corner-mark br"></div>
+      <div class="sheet-header">
+        <div>
+          <div class="sheet-title">${escapeHtml(e.name)}</div>
+          <div class="sheet-sub">${escapeHtml(e.subject || "")} ${e.code ? "• " + escapeHtml(e.code) : ""} ${e.level ? "• " + escapeHtml(e.level) : ""}</div>
+          <div class="sheet-sub">${e.questions} ข้อ • ${e.choices} ตัวเลือก • ${(e.questions * e.pointsPerQuestion).toFixed(1)} คะแนน</div>
+        </div>
+        <div style="text-align:right;font-size:0.7rem;">
+          <div>คะแนน</div>
+          <div style="border:2px solid #000;width:50px;height:30px;border-radius:4px;"></div>
+        </div>
+      </div>
+      <div class="sheet-fields">
+        <div class="field-row"><span>ชื่อ-นามสกุล:</span><div class="field-line"></div></div>
+        <div class="field-row"><span>รหัสนักเรียน:</span><div class="field-line" style="max-width:150px;"></div></div>
+        <div class="field-row"><span>ห้อง:</span><div class="field-line" style="max-width:80px;"></div><span>เลขที่:</span><div class="field-line" style="max-width:80px;"></div></div>
+      </div>
+      <div class="sheet-bubbles">${bubblesHtml}</div>
+      <div style="text-align:center;margin-top:10px;font-size:0.65rem;color:#666;">
+        ○ ระบายให้เต็มวง ● ห้ามเกิน 1 ข้อ
+      </div>
+    </div>
+  `;
+        document.getElementById("printPreviewContainer").innerHTML = html;
+        document.getElementById("printModal").classList.add("active");
+      };
+
+      function doPrint() {
+        const content = document.getElementById("sheetContent").outerHTML;
+        const printArea = document.getElementById("printArea");
+        printArea.innerHTML = content;
+        printArea.style.display = "block";
+        window.print();
+        setTimeout(() => {
+          printArea.style.display = "none";
+          printArea.innerHTML = "";
+        }, 500);
+      }
+
+      // ---------- Scan ----------
+      function renderScanSelect() {
+        const sel = document.getElementById("scanExamSelect");
+        const current = sel.value;
+        sel.innerHTML =
+          '<option value="">-- เลือกชุดข้อสอบ --</option>' +
+          exams
+            .map(
+              (e) =>
+                `<option value="${e.id}">${escapeHtml(e.name)} (${e.questions} ข้อ)</option>`,
+            )
+            .join("");
+        if (current) sel.value = current;
+        onScanExamChange();
+      }
+
+      function onScanExamChange() {
+        const id = document.getElementById("scanExamSelect").value;
+        const info = document.getElementById("scanExamInfo");
+        currentScanExam = exams.find((e) => e.id === id) || null;
+        if (!currentScanExam) {
+          info.textContent = "";
+          return;
+        }
+        info.innerHTML = `📝 ${escapeHtml(currentScanExam.name)} • ${currentScanExam.questions} ข้อ • คะแนนเต็ม ${(currentScanExam.questions * currentScanExam.pointsPerQuestion).toFixed(1)} คะแนน`;
+      }
+
+      async function openCamera() {
+        try {
+          if (cameraStream) stopCamera();
+          const constraints = {
+            video: {
+              facingMode: facingMode,
+              width: { ideal: settings.resolution },
+              height: { ideal: settings.resolution },
+            },
+            audio: false,
+          };
+          cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
+          const video = document.getElementById("cameraVideo");
+          video.srcObject = cameraStream;
+          video.classList.add("active");
+          document.getElementById("cameraPlaceholder").style.display = "none";
+          document.getElementById("cameraOverlay").classList.add("active");
+          document.getElementById("btnCapture").disabled = false;
+          document.getElementById("btnSwitchCamera").disabled = false;
+          document.getElementById("btnOpenCamera").textContent = "🔴 ปิดกล้อง";
+          document.getElementById("btnOpenCamera").onclick = closeCamera;
+          toast("เปิดกล้องแล้ว", "success");
+        } catch (err) {
+          console.error(err);
+          toast("ไม่สามารถเปิดกล้องได้ กรุณาเลือกภาพจากอุปกรณ์", "error");
+          document.getElementById("btnPickImage").focus();
+        }
+      }
+
+      function stopCamera() {
+        if (cameraStream) {
+          cameraStream.getTracks().forEach((t) => t.stop());
+          cameraStream = null;
+        }
+        const video = document.getElementById("cameraVideo");
+        video.srcObject = null;
+        video.classList.remove("active");
+        document.getElementById("cameraPlaceholder").style.display = "block";
+        document.getElementById("cameraOverlay").classList.remove("active");
+        document.getElementById("btnCapture").disabled = true;
+        document.getElementById("btnSwitchCamera").disabled = true;
+        const btn = document.getElementById("btnOpenCamera");
+        btn.textContent = "📷 เปิดกล้อง";
+        btn.onclick = openCamera;
+      }
+
+      function closeCamera() {
+        stopCamera();
+        toast("ปิดกล้องแล้ว");
+      }
+
+      function switchCamera() {
+        facingMode = facingMode === "environment" ? "user" : "environment";
+        if (cameraStream) openCamera();
+      }
+
+      function capturePhoto() {
+        const video = document.getElementById("cameraVideo");
+        if (!video.videoWidth) {
+          toast("กล้องยังไม่พร้อม", "error");
+          return;
+        }
+        const canvas = processingCanvas;
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(video, 0, 0);
+        const dataUrl = canvas.toDataURL("image/jpeg", 0.92);
+        showPreview(dataUrl);
+        if (settings.autoProcess) {
+          setTimeout(() => processImage(), 300);
+        }
+      }
+
+      function showPreview(dataUrl) {
+        currentScanImageData = dataUrl;
+        document.getElementById("previewImg").src = dataUrl;
+        document.getElementById("previewCard").classList.remove("hidden");
+        document.getElementById("reviewCard").classList.add("hidden");
+        document.getElementById("scoreCard").classList.add("hidden");
+      }
+
+      function pickImage() {
+        document.getElementById("fileInput").click();
+      }
+
+      function handleFileSelect(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          showPreview(ev.target.result);
+          if (settings.autoProcess) setTimeout(() => processImage(), 300);
+        };
+        reader.readAsDataURL(file);
+        e.target.value = "";
+      }
+
+      // ---------- OMR Processing ----------
+      /**
+       * OMR processing pipeline:
+       * 1. Load image to canvas
+       * 2. Convert to grayscale
+       * 3. Increase contrast / threshold
+       * 4. Detect corner marks (dark squares at corners)
+       * 5. Perspective correction (if corners found)
+       * 6. Locate bubble grid area
+       * 7. For each question row, analyze bubble fill darkness
+       * 8. Determine selected answer per question
+       *
+       * Note: This is a functional OMR implementation suitable for
+       * clearly-printed answer sheets with corner marks. Real-world
+       * accuracy depends on lighting, print quality, and alignment.
+       * Always require teacher review before saving.
+       */
+
+      function processImage() {
+        if (!currentScanImageData) {
+          toast("ไม่มีภาพให้ประมวลผล", "error");
+          return;
+        }
+        if (!currentScanExam) {
+          toast("กรุณาเลือกชุดข้อสอบก่อน", "error");
+          return;
+        }
+        showLoading("กำลังประมวลผลภาพ OMR...");
+        setTimeout(() => {
+          try {
+            const result = runOMR(currentScanImageData, currentScanExam);
+            lastScanResult = result;
+            currentScanAnswers = result.answers;
+            renderReviewTable();
+            document.getElementById("reviewCard").classList.remove("hidden");
+            document.getElementById("scoreCard").classList.add("hidden");
+            hideLoading();
+            if (result.warnings.length > 0) {
+              result.warnings.forEach((w) => toast(w, "warning", 3500));
+            } else {
+              toast("อ่านคำตอบสำเร็จ กรุณาตรวจสอบ", "success");
+            }
+          } catch (err) {
+            console.error(err);
+            hideLoading();
+            toast("ไม่สามารถอ่านภาพได้ กรุณาถ่ายใหม่หรือเลือกภาพอื่น", "error");
+          }
+        }, 200);
+      }
+
+      function runOMR(dataUrl, exam) {
+        const img = new Image();
+        // We need synchronous processing, so use a canvas with the image already loaded
+        // Since dataUrl is already loaded from preview, we can draw it directly
+        const canvas = processingCanvas;
+        const ctx = canvas.getContext("2d");
+        // Load image synchronously via a cached approach
+        const cachedImg = document.getElementById("previewImg");
+        const w = cachedImg.naturalWidth || cachedImg.width || 800;
+        const h = cachedImg.naturalHeight || cachedImg.height || 1000;
+        canvas.width = w;
+        canvas.height = h;
+        ctx.drawImage(cachedImg, 0, 0, w, h);
+
+        const imageData = ctx.getImageData(0, 0, w, h);
+        const gray = toGrayscale(imageData);
+        const binary = adaptiveThreshold(gray, w, h);
+
+        // Detect corner marks
+        const corners = detectCornerMarks(binary, w, h);
+
+        let workingBinary = binary;
+        let workingW = w,
+          workingH = h;
+        let perspectiveNote = "";
+
+        if (corners) {
+          const warped = perspectiveWarp(binary, w, h, corners, 800, 1100);
+          workingBinary = warped.data;
+          workingW = warped.width;
+          workingH = warped.height;
+        } else {
+          perspectiveNote = "ไม่พบจุดอ้างอิงมุมกระดาษ อาจทำให้อ่านคลาดเคลื่อน";
+        }
+
+        // Detect bubble grid
+        const gridResult = detectBubbleGrid(
+          workingBinary,
+          workingW,
+          workingH,
+          exam,
+        );
+        const answers = gridResult.answers;
+        const warnings = [];
+        if (perspectiveNote) warnings.push(perspectiveNote);
+        if (gridResult.confidence < 0.4)
+          warnings.push("ความมั่นใจในการอ่านต่ำ กรุณาตรวจสอบทุกข้อ");
+
+        // Check for ambiguous / unreadable
+        let ambiguousCount = 0;
+        answers.forEach((a, i) => {
+          if (a === -2) ambiguousCount++;
+        });
+        if (ambiguousCount > 0)
+          warnings.push(`พบ ${ambiguousCount} ข้อที่กำกวม ต้องตรวจสอบ`);
+
+        return { answers, warnings, corners: !!corners };
+      }
+
+      function toGrayscale(imageData) {
+        const d = imageData.data;
+        const gray = new Uint8ClampedArray(imageData.width * imageData.height);
+        for (let i = 0; i < d.length; i += 4) {
+          const g = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
+          gray[i / 4] = g;
+        }
+        return gray;
+      }
+
+      function adaptiveThreshold(gray, w, h) {
+        const binary = new Uint8ClampedArray(w * h);
+        // Global Otsu-like threshold
+        let sum = 0;
+        for (let i = 0; i < gray.length; i++) sum += gray[i];
+        const mean = sum / gray.length;
+        const threshold = mean * 0.85;
+        for (let i = 0; i < gray.length; i++) {
+          binary[i] = gray[i] < threshold ? 0 : 255;
+        }
+        return binary;
+      }
+
+      function detectCornerMarks(binary, w, h) {
+        // Search for dark square marks near each corner
+        const searchSize = Math.floor(Math.min(w, h) * 0.12);
+        const corners = [];
+        const positions = [
+          { x: 0, y: 0, name: "tl" },
+          { x: w - searchSize, y: 0, name: "tr" },
+          { x: 0, y: h - searchSize, name: "bl" },
+          { x: w - searchSize, y: h - searchSize, name: "br" },
+        ];
+        for (const pos of positions) {
+          const found = findDarkSquare(binary, w, h, pos.x, pos.y, searchSize);
+          if (!found) return null;
+          corners.push(found);
+        }
+        return corners;
+      }
+
+      function findDarkSquare(binary, w, h, startX, startY, size) {
+        let bestX = -1,
+          bestY = -1,
+          bestScore = 0;
+        const step = 4;
+        const squareSize = Math.floor(Math.min(w, h) * 0.025);
+        for (
+          let y = startY;
+          y < Math.min(startY + size, h - squareSize);
+          y += step
+        ) {
+          for (
+            let x = startX;
+            x < Math.min(startX + size, w - squareSize);
+            x += step
+          ) {
+            let dark = 0,
+              total = 0;
+            for (let dy = 0; dy < squareSize; dy += 2) {
+              for (let dx = 0; dx < squareSize; dx += 2) {
+                const px = x + dx,
+                  py = y + dy;
+                if (px >= w || py >= h) continue;
+                total++;
+                if (binary[py * w + px] === 0) dark++;
+              }
+            }
+            const score = total > 0 ? dark / total : 0;
+            if (score > bestScore) {
+              bestScore = score;
+              bestX = x + squareSize / 2;
+              bestY = y + squareSize / 2;
+            }
+          }
+        }
+        if (bestScore > 0.5) return { x: bestX, y: bestY };
+        return null;
+      }
+
+      function perspectiveWarp(binary, w, h, corners, outW, outH) {
+        // corners: [tl, tr, bl, br]
+        const [tl, tr, bl, br] = corners;
+        // Compute perspective transform from source quad to dest rect
+        const src = [
+          { x: tl.x, y: tl.y },
+          { x: tr.x, y: tr.y },
+          { x: br.x, y: br.y },
+          { x: bl.x, y: bl.y },
+        ];
+        const dst = [
+          { x: 0, y: 0 },
+          { x: outW - 1, y: 0 },
+          { x: outW - 1, y: outH - 1 },
+          { x: 0, y: outH - 1 },
+        ];
+        const H = computeHomography(src, dst);
+        const out = new Uint8ClampedArray(outW * outH);
+        for (let y = 0; y < outH; y++) {
+          for (let x = 0; x < outW; x++) {
+            const denom = H[6] * x + H[7] * y + 1;
+            const sx = (H[0] * x + H[1] * y + H[2]) / denom;
+            const sy = (H[3] * x + H[4] * y + H[5]) / denom;
+            const ix = Math.round(sx),
+              iy = Math.round(sy);
+            if (ix >= 0 && ix < w && iy >= 0 && iy < h) {
+              out[y * outW + x] = binary[iy * w + ix];
+            } else {
+              out[y * outW + x] = 255;
+            }
+          }
+        }
+        return { data: out, width: outW, height: outH };
+      }
+
+      function computeHomography(src, dst) {
+        // Solve 8x8 linear system for homography matrix (8 unknowns)
+        const A = [];
+        const b = [];
+        for (let i = 0; i < 4; i++) {
+          const { x: sx, y: sy } = src[i];
+          const { x: dx, y: dy } = dst[i];
+          A.push([sx, sy, 1, 0, 0, 0, -dx * sx, -dx * sy]);
+          b.push(dx);
+          A.push([0, 0, 0, sx, sy, 1, -dy * sx, -dy * sy]);
+          b.push(dy);
+        }
+        // Gaussian elimination
+        const n = 8;
+        for (let i = 0; i < n; i++) {
+          // Pivot
+          let maxRow = i;
+          for (let k = i + 1; k < n; k++) {
+            if (Math.abs(A[k][i]) > Math.abs(A[maxRow][i])) maxRow = k;
+          }
+          [A[i], A[maxRow]] = [A[maxRow], A[i]];
+          [b[i], b[maxRow]] = [b[maxRow], b[i]];
+          // Eliminate
+          for (let k = i + 1; k < n; k++) {
+            const factor = A[k][i] / A[i][i];
+            for (let j = i; j < n; j++) A[k][j] -= factor * A[i][j];
+            b[k] -= factor * b[i];
+          }
+        }
+        // Back substitute
+        const x = new Array(n);
+        for (let i = n - 1; i >= 0; i--) {
+          let sum = b[i];
+          for (let j = i + 1; j < n; j++) sum -= A[i][j] * x[j];
+          x[i] = sum / A[i][i];
+        }
+        return x;
+      }
+
+      function detectBubbleGrid(binary, w, h, exam) {
+        // Locate the bubble area by finding rows of dark circles
+        // Use a simplified approach: assume bubbles are arranged in a grid
+        // in the lower 2/3 of the sheet, with a known structure.
+
+        const qCount = exam.questions;
+        const choices = exam.choices;
+
+        // Estimate content area (after header)
+        const headerRatio = 0.22;
+        const top = Math.floor(h * headerRatio);
+        const bottom = Math.floor(h * 0.95);
+        const contentH = bottom - top;
+
+        // Estimate columns: questions arranged in 2 columns typically
+        const cols = qCount > 30 ? 3 : qCount > 15 ? 2 : 1;
+        const rows = Math.ceil(qCount / cols);
+        const rowH = contentH / rows;
+
+        // Bubble area starts after question number
+        const leftMargin = Math.floor(w * 0.08);
+        const rightMargin = Math.floor(w * 0.95);
+        const contentW = rightMargin - leftMargin;
+
+        const answers = [];
+
+        for (let q = 0; q < qCount; q++) {
+          const col = Math.floor(q / rows);
+          const row = q % rows;
+          const colW = contentW / cols;
+          const colLeft = leftMargin + col * colW;
+
+          const rowTop = top + row * rowH;
+          const rowCenterY = rowTop + rowH / 2;
+
+          // Bubble positions within row
+          const bubbleAreaLeft = colLeft + colW * 0.25;
+          const bubbleAreaRight = colLeft + colW * 0.95;
+          const bubbleAreaW = bubbleAreaRight - bubbleAreaLeft;
+          const bubbleSpacing = bubbleAreaW / choices;
+          const bubbleR = Math.max(
+            3,
+            Math.floor(Math.min(rowH, bubbleSpacing) * 0.3),
+          );
+
+          // Sample darkness for each choice
+          const darkness = [];
+          for (let c = 0; c < choices; c++) {
+            const bx = Math.floor(bubbleAreaLeft + bubbleSpacing * (c + 0.5));
+            const by = Math.floor(rowCenterY);
+            const d = sampleCircleDarkness(binary, w, h, bx, by, bubbleR);
+            darkness.push(d);
+          }
+
+          // Determine answer
+          const maxD = Math.max(...darkness);
+          const minD = Math.min(...darkness);
+          const range = maxD - minD;
+
+          if (maxD < 0.15) {
+            // No bubble filled - unanswered
+            answers.push(-1);
+          } else {
+            // Find bubbles above threshold
+            const threshold = Math.max(0.25, minD + range * 0.5);
+            const filled = [];
+            for (let c = 0; c < choices; c++) {
+              if (darkness[c] >= threshold) filled.push(c);
+            }
+            if (filled.length === 0) {
+              answers.push(-1); // unanswered
+            } else if (filled.length === 1) {
+              answers.push(filled[0]); // single answer
+            } else {
+              // Check if one is significantly darker
+              filled.sort((a, b) => darkness[b] - darkness[a]);
+              if (darkness[filled[0]] - darkness[filled[1]] > 0.25) {
+                answers.push(filled[0]); // clear winner
+              } else {
+                answers.push(-2); // ambiguous
+              }
+            }
+          }
+        }
+
+        // Confidence based on how clear the marks were
+        const filledCount = answers.filter((a) => a >= 0).length;
+        const unansweredCount = answers.filter((a) => a === -1).length;
+        const confidence = qCount > 0 ? filledCount / qCount : 0;
+
+        return { answers, confidence };
+      }
+
+      function sampleCircleDarkness(binary, w, h, cx, cy, r) {
+        let dark = 0,
+          total = 0;
+        for (let y = cy - r; y <= cy + r; y++) {
+          for (let x = cx - r; x <= cx + r; x++) {
+            if (x < 0 || x >= w || y < 0 || y >= h) continue;
+            const dx = x - cx,
+              dy = y - cy;
+            if (dx * dx + dy * dy <= r * r) {
+              total++;
+              if (binary[y * w + x] === 0) dark++;
+            }
+          }
+        }
+        return total > 0 ? dark / total : 0;
+      }
+
+      // ---------- Review ----------
+      function renderReviewTable() {
+        const exam = currentScanExam;
+        if (!exam) return;
+        const tbody = document.getElementById("reviewTableBody");
+        tbody.innerHTML = "";
+        for (let i = 0; i < exam.questions; i++) {
+          const ans = currentScanAnswers[i];
+          const correct = exam.answerKey[i];
+          let ansLabel, resultLabel, resultClass;
+          if (ans === -2) {
+            ansLabel = "?";
+            resultLabel = "กำกวม";
+            resultClass = "ambiguous";
+          } else if (ans === -1) {
+            ansLabel = "-";
+            resultLabel = "ไม่ตอบ";
+            resultClass = "unanswered";
+          } else {
+            ansLabel = CHOICE_LABELS[ans];
+            if (ans === correct) {
+              resultLabel = "ถูก";
+              resultClass = "correct";
+            } else {
+              resultLabel = "ผิด";
+              resultClass = "wrong";
+            }
+          }
+          const tr = document.createElement("tr");
+          tr.className = resultClass;
+          tr.innerHTML = `
+      <td>${i + 1}</td>
+      <td>
+        <select class="form-control" style="padding:4px;font-size:0.8rem;min-width:70px;" data-q="${i}">
+          <option value="-1" ${ans === -1 ? "selected" : ""}>-</option>
+          ${CHOICE_LABELS.slice(0, exam.choices)
+            .map(
+              (l, ci) =>
+                `<option value="${ci}" ${ans === ci ? "selected" : ""}>${l}</option>`,
+            )
+            .join("")}
+          <option value="-2" ${ans === -2 ? "selected" : ""}>?</option>
+        </select>
+      </td>
+      <td>${CHOICE_LABELS[correct]}</td>
+      <td><span class="badge badge-${resultClass}">${resultLabel}</span></td>
+    `;
+          tbody.appendChild(tr);
+        }
+        // Bind change events
+        tbody.querySelectorAll("select").forEach((sel) => {
+          sel.addEventListener("change", () => {
+            const qi = parseInt(sel.dataset.q);
+            currentScanAnswers[qi] = parseInt(sel.value);
+            renderReviewTable();
+          });
+        });
+      }
+
+      function computeScore(answers, exam) {
+        let correct = 0,
+          wrong = 0,
+          unanswered = 0,
+          ambiguous = 0;
+        answers.forEach((a, i) => {
+          const correctAns = exam.answerKey[i];
+          if (a === -2) ambiguous++;
+          else if (a === -1) unanswered++;
+          else if (a === correctAns) correct++;
+          else wrong++;
+        });
+        const score = correct * exam.pointsPerQuestion;
+        const totalPossible = exam.questions * exam.pointsPerQuestion;
+        return { correct, wrong, unanswered, ambiguous, score, totalPossible };
+      }
+
+      function saveResult() {
+        if (!currentScanExam || !currentScanAnswers.length) {
+          toast("ไม่มีข้อมูลที่จะบันทึก", "error");
+          return;
+        }
+        const studentName = document.getElementById("studentName").value.trim();
+        const studentId = document.getElementById("studentId").value.trim();
+        if (!studentName) {
+          toast("กรุณากรอกชื่อนักเรียน", "error");
+          return;
+        }
+        const stats = computeScore(currentScanAnswers, currentScanExam);
+        const record = {
+          id: uid(),
+          examId: currentScanExam.id,
+          examName: currentScanExam.name,
+          studentName,
+          studentId,
+          answers: [...currentScanAnswers],
+          answerKey: [...currentScanExam.answerKey],
+          correct: stats.correct,
+          wrong: stats.wrong,
+          unanswered: stats.unanswered,
+          ambiguous: stats.ambiguous,
+          score: stats.score,
+          totalPossible: stats.totalPossible,
+          createdAt: nowISO(),
+        };
+        results.push(record);
+        saveJSON(LS_KEYS.results, results);
+
+        // Show score
+        renderScoreCard(stats, record);
+        document.getElementById("scoreCard").classList.remove("hidden");
+        document.getElementById("reviewCard").classList.add("hidden");
+        toast("บันทึกผลการตรวจแล้ว", "success");
+        renderDashboard();
+        renderResults();
+      }
+
+      function renderScoreCard(stats, record) {
+        const pct =
+          stats.totalPossible > 0
+            ? ((stats.score / stats.totalPossible) * 100).toFixed(1)
+            : "0";
+        const summary = document.getElementById("scoreSummary");
+        summary.innerHTML = `
+    <div class="score-item info"><div class="score-val">${stats.score}</div><div class="score-lbl">คะแนนที่ได้</div></div>
+    <div class="score-item"><div class="score-val">${stats.totalPossible}</div><div class="score-lbl">คะแนนเต็ม</div></div>
+    <div class="score-item good"><div class="score-val">${stats.correct}</div><div class="score-lbl">ถูก</div></div>
+    <div class="score-item bad"><div class="score-val">${stats.wrong}</div><div class="score-lbl">ผิด</div></div>
+    <div class="score-item warn"><div class="score-val">${stats.unanswered}</div><div class="score-lbl">ไม่ตอบ</div></div>
+    <div class="score-item"><div class="score-val" style="color:#8b5cf6;">${stats.ambiguous}</div><div class="score-lbl">ต้องตรวจสอบ</div></div>
+  `;
+        const detail = document.getElementById("scoreDetail");
+        detail.innerHTML = `
+    <div class="text-center" style="margin-top:10px;">
+      <div style="font-size:1.1rem;font-weight:700;color:${pct >= 50 ? "var(--success)" : "var(--danger)"};">${pct}%</div>
+      <div class="text-muted" style="font-size:0.82rem;">${escapeHtml(record.studentName)} ${record.studentId ? "(" + escapeHtml(record.studentId) + ")" : ""}</div>
+      <div class="text-muted" style="font-size:0.78rem;">${escapeHtml(record.examName)} • ${formatDateTime(record.createdAt)}</div>
+    </div>
+  `;
+      }
+
+      function resetScan() {
+        currentScanImageData = null;
+        currentScanAnswers = [];
+        lastScanResult = null;
+        document.getElementById("previewCard").classList.add("hidden");
+        document.getElementById("reviewCard").classList.add("hidden");
+        document.getElementById("scoreCard").classList.add("hidden");
+        document.getElementById("studentName").value = "";
+        document.getElementById("studentId").value = "";
+      }
+
+      // ---------- Results ----------
+      function renderResults() {
+        const examFilter = document.getElementById("resultFilterExam").value;
+        const search = document
+          .getElementById("resultSearch")
+          .value.trim()
+          .toLowerCase();
+        const container = document.getElementById("resultList");
+        let list = [...results].sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
+        );
+        if (examFilter) list = list.filter((r) => r.examId === examFilter);
+        if (search)
+          list = list.filter((r) =>
+            (r.studentName + " " + r.studentId).toLowerCase().includes(search),
+          );
+
+        if (list.length === 0) {
+          container.innerHTML =
+            '<div class="empty-state"><div class="icon">📋</div><p>ไม่พบผลการตรวจ</p></div>';
+          return;
+        }
+        container.innerHTML = list
+          .map((r) => {
+            const pct =
+              r.totalPossible > 0
+                ? ((r.score / r.totalPossible) * 100).toFixed(1)
+                : "0";
+            const badgeClass = pct >= 50 ? "badge-correct" : "badge-wrong";
+            return `<div class="exam-item">
+      <div class="exam-info">
+        <div class="exam-name">${escapeHtml(r.studentName)} ${r.studentId ? '<span class="text-muted" style="font-size:0.8rem;">(' + escapeHtml(r.studentId) + ")</span>" : ""}</div>
+        <div class="exam-meta">${escapeHtml(r.examName)} • ${formatDateTime(r.createdAt)}<br>
+          คะแนน ${r.score}/${r.totalPossible} • ถูก ${r.correct} • ผิด ${r.wrong} • ไม่ตอบ ${r.unanswered}${r.ambiguous ? " • กำกวม " + r.ambiguous : ""}
+        </div>
+      </div>
+      <div class="exam-actions">
+        <span class="badge ${badgeClass}" style="margin-right:4px;">${pct}%</span>
+        <button class="icon-btn" onclick="viewResult('${r.id}')" title="ดู">👁️</button>
+        <button class="icon-btn" onclick="editResult('${r.id}')" title="แก้ไข">✏️</button>
+        <button class="icon-btn danger" onclick="deleteResult('${r.id}')" title="ลบ">🗑️</button>
+      </div>
+    </div>`;
+          })
+          .join("");
+      }
+
+      window.viewResult = function (id) {
+        const r = results.find((x) => x.id === id);
+        if (!r) return;
+        const exam = exams.find((e) => e.id === r.examId) || { choices: 4 };
+        let rows = "";
+        r.answers.forEach((a, i) => {
+          const correct = r.answerKey[i];
+          let ansLabel, resultLabel, cls;
+          if (a === -2) {
+            ansLabel = "?";
+            resultLabel = "กำกวม";
+            cls = "ambiguous";
+          } else if (a === -1) {
+            ansLabel = "-";
+            resultLabel = "ไม่ตอบ";
+            cls = "unanswered";
+          } else {
+            ansLabel = CHOICE_LABELS[a];
+            resultLabel = a === correct ? "ถูก" : "ผิด";
+            cls = a === correct ? "correct" : "wrong";
+          }
+          rows += `<tr class="${cls}"><td>${i + 1}</td><td>${ansLabel}</td><td>${CHOICE_LABELS[correct]}</td><td><span class="badge badge-${cls}">${resultLabel}</span></td></tr>`;
+        });
+        document.getElementById("detailModalTitle").textContent =
+          "ผลการตรวจ: " + r.studentName;
+        document.getElementById("detailModalBody").innerHTML = `
+    <div class="form-group"><label>ชุดข้อสอบ</label><div>${escapeHtml(r.examName)}</div></div>
+    <div class="form-row">
+      <div class="form-group"><label>ชื่อนักเรียน</label><div>${escapeHtml(r.studentName)}</div></div>
+      <div class="form-group"><label>รหัส</label><div>${escapeHtml(r.studentId || "-")}</div></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>คะแนน</label><div><b>${r.score}</b> / ${r.totalPossible}</div></div>
+      <div class="form-group"><label>ร้อยละ</label><div>${((r.score / r.totalPossible) * 100).toFixed(1)}%</div></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>ถูก</label><div style="color:var(--success);font-weight:700;">${r.correct}</div></div>
+      <div class="form-group"><label>ผิด</label><div style="color:var(--danger);font-weight:700;">${r.wrong}</div></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>ไม่ตอบ</label><div style="color:var(--warning);font-weight:700;">${r.unanswered}</div></div>
+      <div class="form-group"><label>กำกวม</label><div style="color:#8b5cf6;font-weight:700;">${r.ambiguous}</div></div>
+    </div>
+    <div class="divider"></div>
+    <div class="result-table-wrap">
+      <table class="result-table"><thead><tr><th>ข้อ</th><th>คำตอบ</th><th>เฉลย</th><th>ผล</th></tr></thead><tbody>${rows}</tbody></table>
+    </div>
+    <div class="text-muted mt-2" style="font-size:0.78rem;">ตรวจเมื่อ: ${formatDateTime(r.createdAt)}</div>
+  `;
+        document.getElementById("detailModal").classList.add("active");
+      };
+
+      window.editResult = function (id) {
+        const r = results.find((x) => x.id === id);
+        if (!r) return;
+        const exam = exams.find((e) => e.id === r.examId);
+        if (!exam) {
+          toast("ไม่พบชุดข้อสอบ", "error");
+          return;
+        }
+        // Load into scan review
+        switchSection("scan");
+        document.getElementById("scanExamSelect").value = r.examId;
+        onScanExamChange();
+        currentScanExam = exam;
+        currentScanAnswers = [...r.answers];
+        currentScanImageData = null;
+        document.getElementById("previewCard").classList.add("hidden");
+        document.getElementById("scoreCard").classList.add("hidden");
+        document.getElementById("studentName").value = r.studentName;
+        document.getElementById("studentId").value = r.studentId;
+        renderReviewTable();
+        document.getElementById("reviewCard").classList.remove("hidden");
+        // Change save to update
+        const btn = document.getElementById("btnConfirmSave");
+        btn.textContent = "💾 อัปเดตผลการตรวจ";
+        btn.onclick = () => {
+          const stats = computeScore(currentScanAnswers, exam);
+          r.studentName =
+            document.getElementById("studentName").value.trim() ||
+            r.studentName;
+          r.studentId = document.getElementById("studentId").value.trim();
+          r.answers = [...currentScanAnswers];
+          r.correct = stats.correct;
+          r.wrong = stats.wrong;
+          r.unanswered = stats.unanswered;
+          r.ambiguous = stats.ambiguous;
+          r.score = stats.score;
+          r.totalPossible = stats.totalPossible;
+          saveJSON(LS_KEYS.results, results);
+          toast("อัปเดตผลการตรวจแล้ว", "success");
+          renderScoreCard(stats, r);
+          document.getElementById("scoreCard").classList.remove("hidden");
+          document.getElementById("reviewCard").classList.add("hidden");
+          btn.textContent = "💾 ยืนยันบันทึกผล";
+          btn.onclick = saveResult;
+          renderResults();
+          renderDashboard();
+        };
+      };
+
+      window.deleteResult = function (id) {
+        if (!confirm("ต้องการลบผลการตรวจนี้ใช่หรือไม่?")) return;
+        results = results.filter((r) => r.id !== id);
+        saveJSON(LS_KEYS.results, results);
+        renderResults();
+        renderDashboard();
+        toast("ลบผลการตรวจแล้ว", "success");
+      };
+
+      function exportCSV() {
+        if (results.length === 0) {
+          toast("ไม่มีข้อมูลให้ส่งออก", "error");
+          return;
+        }
+        const headers = [
+          "วันที่",
+          "ชุดข้อสอบ",
+          "ชื่อนักเรียน",
+          "รหัสนักเรียน",
+          "คะแนน",
+          "คะแนนเต็ม",
+          "ร้อยละ",
+          "ถูก",
+          "ผิด",
+          "ไม่ตอบ",
+          "กำกวม",
+        ];
+        const rows = results.map((r) => [
+          formatDateTime(r.createdAt),
+          r.examName,
+          r.studentName,
+          r.studentId,
+          r.score,
+          r.totalPossible,
+          r.totalPossible > 0
+            ? ((r.score / r.totalPossible) * 100).toFixed(1)
+            : "0",
+          r.correct,
+          r.wrong,
+          r.unanswered,
+          r.ambiguous,
+        ]);
+        const csv =
+          "\uFEFF" +
+          [headers, ...rows]
+            .map((row) =>
+              row.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(","),
+            )
+            .join("\n");
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `ผลการตรวจข้อสอบ_${new Date().toISOString().slice(0, 10)}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+        toast("ส่งออก CSV แล้ว", "success");
+      }
+
+      function printResults() {
+        let list = [...results];
+        const examFilter = document.getElementById("resultFilterExam").value;
+        const search = document
+          .getElementById("resultSearch")
+          .value.trim()
+          .toLowerCase();
+        if (examFilter) list = list.filter((r) => r.examId === examFilter);
+        if (search)
+          list = list.filter((r) =>
+            (r.studentName + " " + r.studentId).toLowerCase().includes(search),
+          );
+        if (list.length === 0) {
+          toast("ไม่มีข้อมูลให้พิมพ์", "error");
+          return;
+        }
+        let rows = list
+          .map((r, i) => {
+            const pct =
+              r.totalPossible > 0
+                ? ((r.score / r.totalPossible) * 100).toFixed(1)
+                : "0";
+            return `<tr>
+      <td>${i + 1}</td><td>${escapeHtml(r.studentName)}</td><td>${escapeHtml(r.studentId || "-")}</td>
+      <td>${escapeHtml(r.examName)}</td><td>${r.score}</td><td>${r.totalPossible}</td><td>${pct}%</td>
+      <td>${r.correct}</td><td>${r.wrong}</td><td>${r.unanswered}</td>
+    </tr>`;
+          })
+          .join("");
+        const html = `<div style="font-family:'Sarabun',sans-serif;padding:20px;">
+    <h2 style="text-align:center;">รายงานผลการตรวจข้อสอบ</h2>
+    <p style="text-align:center;font-size:0.85rem;color:#666;">พิมพ์เมื่อ ${formatDateTime(nowISO())}</p>
+    <table style="width:100%;border-collapse:collapse;font-size:0.8rem;margin-top:16px;">
+      <thead><tr style="background:#f1f5f9;">
+        <th style="border:1px solid #ccc;padding:6px;">#</th>
+        <th style="border:1px solid #ccc;padding:6px;">ชื่อ</th>
+        <th style="border:1px solid #ccc;padding:6px;">รหัส</th>
+        <th style="border:1px solid #ccc;padding:6px;">ชุดข้อสอบ</th>
+        <th style="border:1px solid #ccc;padding:6px;">คะแนน</th>
+        <th style="border:1px solid #ccc;padding:6px;">เต็ม</th>
+        <th style="border:1px solid #ccc;padding:6px;">%</th>
+        <th style="border:1px solid #ccc;padding:6px;">ถูก</th>
+        <th style="border:1px solid #ccc;padding:6px;">ผิด</th>
+        <th style="border:1px solid #ccc;padding:6px;">ไม่ตอบ</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  </div>`;
+        const printArea = document.getElementById("printArea");
+        printArea.innerHTML = html;
+        printArea.style.display = "block";
+        window.print();
+        setTimeout(() => {
+          printArea.style.display = "none";
+          printArea.innerHTML = "";
+        }, 500);
+      }
+
+      // ---------- Settings ----------
+      function renderSettings() {
+        document.getElementById("settingTheme").value = settings.theme;
+        document.getElementById("settingResolution").value =
+          settings.resolution;
+        document.getElementById("settingAutoProcess").checked =
+          settings.autoProcess;
+      }
+
+      function saveSettings() {
+        settings.theme = document.getElementById("settingTheme").value;
+        settings.resolution = parseInt(
+          document.getElementById("settingResolution").value,
+        );
+        settings.autoProcess =
+          document.getElementById("settingAutoProcess").checked;
+        applyTheme(settings.theme);
+        saveJSON(LS_KEYS.settings, settings);
+        toast("บันทึกการตั้งค่าแล้ว", "success");
+      }
+
+      function exportAll() {
+        const data = { exams, results, settings, exportedAt: nowISO() };
+        const blob = new Blob([JSON.stringify(data, null, 2)], {
+          type: "application/json",
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `omr_backup_${new Date().toISOString().slice(0, 10)}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        toast("ส่งออกข้อมูลแล้ว", "success");
+      }
+
+      function clearAll() {
+        if (
+          !confirm(
+            "ต้องการล้างข้อมูลทั้งหมด (ชุดข้อสอบและผลการตรวจ) ใช่หรือไม่?\nการกระทำนี้ไม่สามารถย้อนกลับได้",
+          )
+        )
+          return;
+        if (!confirm("ยืนยันอีกครั้ง: ลบข้อมูลทั้งหมด?")) return;
+        exams = [];
+        results = [];
+        saveJSON(LS_KEYS.exams, exams);
+        saveJSON(LS_KEYS.results, results);
+        renderDashboard();
+        renderExamList();
+        renderResults();
+        renderScanSelect();
+        toast("ล้างข้อมูลทั้งหมดแล้ว", "success");
+      }
+
+      // ---------- Init ----------
+      function init() {
+        exams = loadJSON(LS_KEYS.exams, []);
+        results = loadJSON(LS_KEYS.results, []);
+        settings = loadJSON(LS_KEYS.settings, {
+          theme: "light",
+          resolution: 1920,
+          autoProcess: true,
+        });
+
+        applyTheme(settings.theme);
+        renderDashboard();
+        renderExamList();
+        renderScanSelect();
+        renderResults();
+        renderSettings();
+
+        // Nav tabs
+        document.querySelectorAll(".nav-tab").forEach((tab) => {
+          tab.addEventListener("click", () =>
+            switchSection(tab.dataset.section),
+          );
+        });
+
+        // Theme toggle
+        document.getElementById("themeToggle").addEventListener("click", () => {
+          applyTheme(settings.theme === "dark" ? "light" : "dark");
+        });
+
+        // Exam modal
+        document
+          .getElementById("btnAddExam")
+          .addEventListener("click", () => openExamModal());
+        document
+          .getElementById("examModalClose")
+          .addEventListener("click", closeExamModal);
+        document.getElementById("examModal").addEventListener("click", (e) => {
+          if (e.target.id === "examModal") closeExamModal();
+        });
+        document
+          .getElementById("fExamQuestions")
+          .addEventListener("change", () => {
+            currentExamForGrid = {
+              questions: parseInt(
+                document.getElementById("fExamQuestions").value,
+              ),
+              choices: parseInt(document.getElementById("fExamChoices").value),
+            };
+            renderAnswerGrid();
+          });
+        document
+          .getElementById("fExamChoices")
+          .addEventListener("change", renderAnswerGrid);
+        document
+          .getElementById("btnRandomAnswer")
+          .addEventListener("click", () => {
+            const q = parseInt(document.getElementById("fExamQuestions").value);
+            const c = parseInt(document.getElementById("fExamChoices").value);
+            currentAnswerGrid = Array.from({ length: q }, () =>
+              Math.floor(Math.random() * c),
+            );
+            renderAnswerGrid();
+            toast("สุ่มเฉลยแล้ว", "success");
+          });
+        document
+          .getElementById("btnSaveExam")
+          .addEventListener("click", saveExam);
+
+        // Detail modal
+        document
+          .getElementById("detailModalClose")
+          .addEventListener("click", () =>
+            document.getElementById("detailModal").classList.remove("active"),
+          );
+        document
+          .getElementById("detailModal")
+          .addEventListener("click", (e) => {
+            if (e.target.id === "detailModal")
+              e.target.classList.remove("active");
+          });
+
+        // Print modal
+        document
+          .getElementById("printModalClose")
+          .addEventListener("click", () =>
+            document.getElementById("printModal").classList.remove("active"),
+          );
+        document.getElementById("printModal").addEventListener("click", (e) => {
+          if (e.target.id === "printModal") e.target.classList.remove("active");
+        });
+        document
+          .getElementById("btnDoPrint")
+          .addEventListener("click", doPrint);
+
+        // Exam search
+        document
+          .getElementById("examSearch")
+          .addEventListener("input", renderExamList);
+
+        // Scan
+        document
+          .getElementById("scanExamSelect")
+          .addEventListener("change", onScanExamChange);
+        document
+          .getElementById("btnOpenCamera")
+          .addEventListener("click", openCamera);
+        document
+          .getElementById("btnSwitchCamera")
+          .addEventListener("click", switchCamera);
+        document
+          .getElementById("btnCapture")
+          .addEventListener("click", capturePhoto);
+        document
+          .getElementById("btnPickImage")
+          .addEventListener("click", pickImage);
+        document
+          .getElementById("fileInput")
+          .addEventListener("change", handleFileSelect);
+        document
+          .getElementById("btnProcess")
+          .addEventListener("click", processImage);
+        document
+          .getElementById("btnRetake")
+          .addEventListener("click", resetScan);
+        document
+          .getElementById("btnConfirmSave")
+          .addEventListener("click", saveResult);
+        document
+          .getElementById("btnCancelReview")
+          .addEventListener("click", resetScan);
+
+        // Results
+        document
+          .getElementById("resultFilterExam")
+          .addEventListener("change", renderResults);
+        document
+          .getElementById("resultSearch")
+          .addEventListener("input", renderResults);
+        document
+          .getElementById("btnExportCSV")
+          .addEventListener("click", exportCSV);
+        document
+          .getElementById("btnPrintResults")
+          .addEventListener("click", printResults);
+
+        // Settings
+        document
+          .getElementById("settingTheme")
+          .addEventListener("change", saveSettings);
+        document
+          .getElementById("settingResolution")
+          .addEventListener("change", saveSettings);
+        document
+          .getElementById("settingAutoProcess")
+          .addEventListener("change", saveSettings);
+        document
+          .getElementById("btnExportAll")
+          .addEventListener("click", exportAll);
+        document
+          .getElementById("btnClearAll")
+          .addEventListener("click", clearAll);
+
+        // Populate result filter
+        const filterSel = document.getElementById("resultFilterExam");
+        filterSel.innerHTML =
+          '<option value="">ทุกชุดข้อสอบ</option>' +
+          exams
+            .map(
+              (e) => `<option value="${e.id}">${escapeHtml(e.name)}</option>`,
+            )
+            .join("");
+
+        // Handle visibility change to stop camera
+        document.addEventListener("visibilitychange", () => {
+          if (document.hidden && cameraStream) stopCamera();
+        });
+      }
+
+      document.addEventListener("DOMContentLoaded", init);
+    </script>
+  </body>
+</html>

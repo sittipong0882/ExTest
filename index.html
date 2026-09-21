@@ -6,7 +6,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
-    <title>ระบบตรวจข้อสอบ OMR</title>
+    <title>ระบบตรวจข้อสอบ OMR (Precision)</title>
     <!-- โหลด OpenCV.js -->
     <script
       async
@@ -15,29 +15,25 @@
     ></script>
     <style>
       body {
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        font-family: sans-serif;
         margin: 0;
         padding: 0;
-        background-color: #f4f7f6;
+        background-color: #2c3e50;
+        color: white;
         display: flex;
         flex-direction: column;
         height: 100vh;
         overflow: hidden;
       }
       #header {
-        background-color: #007bff;
-        color: white;
-        text-align: center;
+        background-color: #1abc9c;
         padding: 10px;
-        font-size: 1.2rem;
+        text-align: center;
         font-weight: bold;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        z-index: 10;
       }
       #camera-container {
         flex: 1;
         position: relative;
-        background-color: #000;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -48,50 +44,51 @@
         height: 100%;
         object-fit: cover;
       }
-      /* เส้นไกด์สำหรับวางกระดาษ */
-      .guide-box {
+      #debug-canvas {
         position: absolute;
-        top: 10%;
-        left: 5%;
-        width: 90%;
-        height: 80%;
-        border: 2px dashed rgba(255, 255, 255, 0.6);
-        border-radius: 10px;
-        pointer-events: none;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: none;
+        background: #000;
+        z-index: 5;
       }
       #controls {
-        padding: 15px;
-        background-color: white;
+        padding: 10px;
+        background-color: #34495e;
         display: flex;
         flex-direction: column;
-        gap: 10px;
-        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-        z-index: 10;
+        gap: 8px;
+        max-height: 45vh;
+        overflow-y: auto;
       }
       .btn {
-        padding: 15px;
-        font-size: 1.1rem;
+        padding: 12px;
+        font-size: 1rem;
         border: none;
-        border-radius: 8px;
+        border-radius: 6px;
         cursor: pointer;
         font-weight: bold;
-        transition: 0.2s;
       }
       .btn-primary {
-        background-color: #28a745;
+        background-color: #e74c3c;
         color: white;
       }
-      .btn-primary:active {
-        background-color: #218838;
-      }
       .btn-secondary {
-        background-color: #ffc107;
+        background-color: #f1c40f;
         color: #333;
       }
-      .btn-secondary:active {
-        background-color: #e0a800;
+      .slider-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.85rem;
       }
-
+      .slider-group input[type="range"] {
+        flex: 1;
+      }
       #result-modal {
         display: none;
         position: fixed;
@@ -99,13 +96,14 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0, 0, 0, 0.8);
+        background: rgba(0, 0, 0, 0.85);
         justify-content: center;
         align-items: center;
         z-index: 100;
       }
       .modal-content {
         background: white;
+        color: #333;
         padding: 20px;
         border-radius: 12px;
         width: 90%;
@@ -116,54 +114,93 @@
       .score-box {
         font-size: 2rem;
         text-align: center;
-        color: #007bff;
+        color: #e74c3c;
         font-weight: bold;
         margin: 10px 0;
       }
       .detail-item {
         display: flex;
         justify-content: space-between;
-        padding: 5px 0;
+        padding: 4px 0;
         border-bottom: 1px solid #eee;
+        font-size: 0.9rem;
       }
       .correct {
         color: green;
+        font-weight: bold;
       }
       .wrong {
         color: red;
+        font-weight: bold;
       }
       #loading {
         display: none;
-        color: white;
-        font-size: 1.2rem;
         position: absolute;
+        background: rgba(0, 0, 0, 0.7);
+        padding: 20px;
+        border-radius: 10px;
+        z-index: 20;
+        font-size: 1.2rem;
       }
       canvas {
         display: none;
-      } /* ซ่อน canvas ที่ใช้ประมวลผล */
+      }
     </style>
   </head>
   <body>
-    <div id="header">ระบบตรวจข้อสอบ (20 ข้อ)</div>
+    <div id="header">ระบบตรวจข้อสอบ OMR (แม่นยำสูง)</div>
 
     <div id="camera-container">
       <video id="video" autoplay playsinline></video>
-      <div class="guide-box"></div>
+      <canvas id="debug-canvas"></canvas>
       <div id="loading">กำลังประมวลผล...</div>
     </div>
 
     <div id="controls">
-      <button class="btn btn-secondary" id="btnKey">
-        ตั้งค่าเฉลย (ปัจจุบัน: 1,2,3,4,5...)
-      </button>
-      <button class="btn btn-primary" id="btnCapture">
-        📸 ถ่ายรูปและตรวจข้อสอบ
-      </button>
+      <div style="display: flex; gap: 5px">
+        <button class="btn btn-secondary" style="flex: 1" id="btnDebug">
+          🔍 แสดงตำแหน่งเป้า (Debug)
+        </button>
+        <button class="btn btn-primary" style="flex: 1" id="btnCapture">
+          📸 ตรวจข้อสอบ
+        </button>
+      </div>
+
+      <div
+        style="
+          font-size: 0.8rem;
+          text-align: center;
+          color: #bdc3c7;
+          margin-top: 5px;
+        "
+      >
+        ปรับจูนตำแหน่งเป้า (ถ้าตรวจแล้วไม่ตรง)
+      </div>
+
+      <div class="slider-group">
+        <label>ตำแหน่ง X: <span id="valX">100</span></label>
+        <input type="range" id="sliderX" min="0" max="400" value="100" />
+      </div>
+      <div class="slider-group">
+        <label>ตำแหน่ง Y: <span id="valY">300</span></label>
+        <input type="range" id="sliderY" min="0" max="600" value="300" />
+      </div>
+      <div class="slider-group">
+        <label>ห่างแนวนอน: <span id="valGapX">50</span></label>
+        <input type="range" id="sliderGapX" min="30" max="100" value="50" />
+      </div>
+      <div class="slider-group">
+        <label>ห่างแนวตั้ง: <span id="valGapY">60</span></label>
+        <input type="range" id="sliderGapY" min="30" max="100" value="60" />
+      </div>
+      <div class="slider-group">
+        <label>ความไวแสง: <span id="valThresh">25</span></label>
+        <input type="range" id="sliderThresh" min="5" max="80" value="25" />
+      </div>
     </div>
 
-    <canvas id="canvas"></canvas>
+    <canvas id="capture-canvas"></canvas>
 
-    <!-- Modal แสดงผลคะแนน -->
     <div id="result-modal">
       <div class="modal-content">
         <h2 style="text-align: center; margin-top: 0">ผลการตรวจ</h2>
@@ -180,30 +217,39 @@
     </div>
 
     <script>
-      // --- ตั้งค่าเริ่มต้น ---
-      let answerKey = []; // เก็บเฉลย 1-5 (20 ข้อ)
-      // สร้างเฉลยเริ่มต้น 1,2,3,4,5 สลับไปเรื่อยๆ
-      for (let i = 0; i < 20; i++) {
-        answerKey.push((i % 5) + 1);
-      }
+      // --- ค่าเริ่มต้นและตัวแปรสำหรับการปรับจูน ---
+      let answerKey = Array.from({ length: 20 }, (_, i) => (i % 5) + 1); // เฉลยตัวอย่าง 1-5 สลับกัน
+      let cvReady = false;
+      let stream = null;
+
+      // ค่าพิกัดสำหรับวาดเป้าหา bubbles (ปรับได้ผ่าน Slider)
+      let config = {
+        startX: 100,
+        startY: 300,
+        gapX: 50,
+        gapY: 60,
+        threshold: 25, // เปอร์เซ็นต์ความเข้มของรอยฝน
+        canvasW: 800,
+        canvasH: 1100,
+      };
 
       const video = document.getElementById("video");
-      const canvas = document.getElementById("canvas");
+      const captureCanvas = document.getElementById("capture-canvas");
+      const debugCanvas = document.getElementById("debug-canvas");
       const loading = document.getElementById("loading");
-      let stream = null;
-      let cvReady = false;
 
-      // --- ฟังก์ชันเมื่อ OpenCV โหลดเสร็จ ---
+      // --- ฟังก์ชันโหลด OpenCV ---
       function onOpenCvReady() {
         cvReady = true;
         console.log("OpenCV.js พร้อมใช้งาน");
+        startCamera();
       }
 
-      // --- เปิดกล้องหลังบ้าน ---
+      // --- เปิดกล้อง ---
       async function startCamera() {
         try {
           stream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: "environment" }, // ใช้กล้องหลัง
+            video: { facingMode: "environment" },
             audio: false,
           });
           video.srcObject = stream;
@@ -212,105 +258,77 @@
         }
       }
 
+      // --- ผูก Event กับ Slider เพื่ออัปเดตค่า Config ---
+      const bindSlider = (id, key, displayId) => {
+        const slider = document.getElementById(id);
+        slider.addEventListener("input", (e) => {
+          config[key] = parseInt(e.target.value);
+          document.getElementById(displayId).innerText = e.target.value;
+          if (debugCanvas.style.display === "block") {
+            // ถ้าเปิด Debug อยู่ ให้วาดเป้าใหม่ทันที (แต่ต้องมีภาพค้างอยู่)
+            if (captureCanvas.width > 0) drawDebugGrid();
+          }
+        });
+      };
+      bindSlider("sliderX", "startX", "valX");
+      bindSlider("sliderY", "startY", "valY");
+      bindSlider("sliderGapX", "gapX", "valGapX");
+      bindSlider("sliderGapY", "gapY", "valGapY");
+      bindSlider("sliderThresh", "threshold", "valThresh");
+
       // --- ปุ่มตั้งค่าเฉลย ---
-      document.getElementById("btnKey").addEventListener("click", () => {
-        let currentKeyStr = answerKey.join(",");
-        let newKey = prompt(
-          "กรอกเฉลย 20 ข้อ คั่นด้วยเครื่องหมายจุลภาค (1-5)\nตัวอย่าง: 1,2,3,4,5,1,2,3,4,5,1,2,3,4,5,1,2,3,4,5",
-          currentKeyStr,
-        );
-        if (newKey) {
-          let arr = newKey.split(",").map((n) => parseInt(n.trim()));
-          if (arr.length === 20 && arr.every((n) => n >= 1 && n <= 5)) {
-            answerKey = arr;
-            alert("บันทึกเฉลยเรียบร้อย!");
-          } else {
-            alert("รูปแบบเฉลยไม่ถูกต้อง ต้องมี 20 ตัวเลข และเป็น 1-5 เท่านั้น");
-          }
+      document.getElementById("btnDebug").addEventListener("click", () => {
+        // สลับโหมด Debug
+        if (debugCanvas.style.display === "block") {
+          debugCanvas.style.display = "none";
+          video.style.display = "block";
+        } else {
+          if (!cvReady) return alert("ระบบ AI กำลังโหลด...");
+          captureImage(() => {
+            warpAndShowDebug();
+          });
         }
       });
 
-      // --- ปุ่มถ่ายรูปและประมวลผล ---
       document.getElementById("btnCapture").addEventListener("click", () => {
-        if (!cvReady) {
-          alert("ระบบ AI กำลังโหลด กรุณารอสักครู่...");
-          return;
-        }
-        loading.style.display = "block";
-
-        // วาดภาพจากวิดีโอลง Canvas
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-        // เริ่มประมวลผล
-        setTimeout(() => {
-          processImage();
-        }, 100); // หน่วงเวลาเล็กน้อยให้ UI อัปเดต
+        if (!cvReady) return alert("ระบบ AI กำลังโหลด...");
+        captureImage(() => {
+          processOMR(false); // false = ไม่ใช่โหมด Debug (ให้ตรวจคะแนนเลย)
+        });
       });
 
-      // --- ฟังก์ชันประมวลผลภาพหลัก ---
-      function processImage() {
+      function captureImage(callback) {
+        loading.style.display = "block";
+        captureCanvas.width = video.videoWidth;
+        captureCanvas.height = video.videoHeight;
+        const ctx = captureCanvas.getContext("2d");
+        ctx.drawImage(video, 0, 0, captureCanvas.width, captureCanvas.height);
+        setTimeout(callback, 100);
+      }
+
+      // --- ฟังก์ชันหลัก: แปลงภาพและประมวลผล ---
+      function processOMR(isDebug) {
         try {
-          let src = cv.imread(canvas);
-          let dst = new cv.Mat();
-          let gray = new cv.Mat();
+          let src = cv.imread(captureCanvas);
+          let warped = getWarpedImage(src);
 
-          // 1. แปลงเป็นขาวดำ
-          cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY, 0);
-
-          // 2. ทำ Threshold เพื่อแยกแยะกระดาษกับพื้นหลัง
-          cv.threshold(
-            gray,
-            gray,
-            150,
-            255,
-            cv.THRESH_BINARY_INV + cv.THRESH_OTSU,
-          );
-
-          // 3. หา Contours (เส้นรอบรูป)
-          let contours = new cv.MatVector();
-          let hierarchy = new cv.Mat();
-          cv.findContours(
-            gray,
-            contours,
-            hierarchy,
-            cv.RETR_EXTERNAL,
-            cv.CHAIN_APPROX_SIMPLE,
-          );
-
-          // 4. หา 4 มุมของกระดาษ (สมมติว่าใช้ Markers สี่มุม)
-          // ในที่นี้จะใช้วิธีหา Contour ที่ใหญ่ที่สุด (สมมติว่ากระดาษคือวัตถุที่ใหญ่ที่สุดในภาพ)
-          // *หมายเหตุ: การหา 4 มุมที่แม่นยำต้องใช้เทคนิคหาจุด Markers สี่เหลี่ยมดำ
-          // แต่เพื่อความง่ายในตัวอย่างนี้ จะใช้ Bounding Box ของ Contour ที่ใหญ่ที่สุด
-
-          let maxArea = 0;
-          let maxContourIdx = -1;
-          for (let i = 0; i < contours.size(); ++i) {
-            let cnt = contours.get(i);
-            let area = cv.contourArea(cnt);
-            if (area > maxArea) {
-              maxArea = area;
-              maxContourIdx = i;
-            }
+          if (!warped) {
+            loading.style.display = "none";
+            return; // จบการทำงานถ้าหาจุด Markers ไม่ครบ
           }
 
-          if (maxContourIdx === -1) {
-            throw new Error("ไม่พบกระดาษในภาพ");
+          if (isDebug) {
+            drawDebugGrid(warped);
+            warped.delete();
+            src.delete();
+            loading.style.display = "none";
+            return;
           }
 
-          // ดึงกรอบสี่เหลี่ยมของกระดาษ
-          let maxContour = contours.get(maxContourIdx);
-          let rect = cv.boundingRect(maxContour);
+          // สแกนหาคำตอบ
+          let detectedAnswers = scanBubbles(warped);
 
-          // ครอปภาพเอาเฉพาะกระดาษ
-          let roi = src.roi(rect);
-
-          // 5. ประมวลผลหาคำตอบจากภาพที่ครอปแล้ว
-          let detectedAnswers = scanBubbles(roi);
-
-          // 6. ตรวจคะแนน
+          // คำนวณคะแนน
           let score = 0;
           let detailsHtml = "";
           for (let i = 0; i < 20; i++) {
@@ -324,92 +342,222 @@
                     </div>`;
           }
 
-          // แสดงผล
           document.getElementById("score-display").innerText = `${score} / 20`;
           document.getElementById("detail-results").innerHTML = detailsHtml;
           document.getElementById("result-modal").style.display = "flex";
-          loading.style.display = "none";
 
-          // คืนค่าหน่วยความจำ
+          warped.delete();
           src.delete();
-          dst.delete();
-          gray.delete();
-          contours.delete();
-          hierarchy.delete();
-          roi.delete();
+          loading.style.display = "none";
         } catch (error) {
           console.error(error);
-          alert("เกิดข้อผิดพลาดในการประมวลผล: " + error.message);
+          alert("เกิดข้อผิดพลาด: " + error.message);
           loading.style.display = "none";
         }
       }
 
-      // --- ฟังก์ชันสแกนหาวงกลมที่ถูกฝน ---
-      // ฟังก์ชันนี้จะประเมินตำแหน่งของวงกลมจากสัดส่วนของภาพที่ครอปได้
-      function scanBubbles(img) {
-        let answers = new Array(20).fill(null);
-
-        // แปลงเป็นภาพขาวดำ
+      // --- ฟังก์ชันหาจุด 4 มุมและทำ Perspective Transform ---
+      function getWarpedImage(src) {
         let gray = new cv.Mat();
-        cv.cvtColor(img, gray, cv.COLOR_RGBA2GRAY, 0);
-        cv.threshold(gray, gray, 128, 255, cv.THRESH_BINARY_INV);
+        let binary = new cv.Mat();
+        cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
+        cv.threshold(
+          gray,
+          binary,
+          100,
+          255,
+          cv.THRESH_BINARY_INV + cv.THRESH_OTSU,
+        );
 
-        // สมมติฐาน: ภาพที่ได้ถูกครอปมาพอดี (มีขอบเขต)
-        // เราจะใช้การประมาณการตำแหน่งแบบ % ของความกว้าง/ความสูง
-        // (ในแอปจริง ควรใช้ Perspective Transform เพื่อดึงภาพให้ตรงระนาบก่อน)
+        let contours = new cv.MatVector();
+        let hierarchy = new cv.Mat();
+        cv.findContours(
+          binary,
+          contours,
+          hierarchy,
+          cv.RETR_EXTERNAL,
+          cv.CHAIN_APPROX_SIMPLE,
+        );
 
-        let width = img.cols;
-        let height = img.rows;
+        let markers = [];
+        for (let i = 0; i < contours.size(); ++i) {
+          let cnt = contours.get(i);
+          let area = cv.contourArea(cnt);
+          // กรองขนาดของ Markers (ต้องไม่เล็กหรือใหญ่เกินไป)
+          if (area > 500 && area < 20000) {
+            let peri = cv.arcLength(cnt, true);
+            let approx = new cv.Mat();
+            cv.approxPolyDP(cnt, approx, 0.02 * peri, true);
 
-        // ค่าโดยประมาณจากรูปภาพต้นฉบับ (ต้องปรับจูนตามการจัดวางจริง)
-        // สมมติว่าวงกลมเริ่มที่ 20% จากซ้าย และ 30% จากบน
-        let startX = width * 0.15;
-        let startY = height * 0.3;
-        let colSpacing = width * 0.1; // ระยะห่างระหว่างคอลัมน์ 1-5
-        let rowSpacing = height * 0.04; // ระยะห่างระหว่างแถว
-
-        // วนลูป 20 ข้อ (แบ่งเป็น 2 ฝั่ง ฝั่งละ 10 ข้อ)
-        for (let q = 0; q < 20; q++) {
-          let col = q < 10 ? 0 : 1; // 0 = ซ้าย (ข้อ 1-10), 1 = ขวา (ข้อ 11-20)
-          let row = q < 10 ? q : q - 10; // แถวที่ 0-9
-
-          let baseX = col === 0 ? startX : startX + width * 0.5; // เลื่อนไปฝั่งขวา
-          let baseY = startY + row * rowSpacing;
-
-          let maxBlackPixels = 0;
-          let selectedChoice = null;
-
-          // ตรวจสอบตัวเลือก 1-5
-          for (let c = 0; c < 5; c++) {
-            let checkX = Math.floor(baseX + c * colSpacing);
-            let checkY = Math.floor(baseY);
-
-            // กำหนดขอบเขตการตรวจ (ROI เล็กๆ รอบวงกลม)
-            let roiSize = Math.floor(width * 0.02); // ขนาดกรอบตรวจ
-            let rx = Math.max(0, checkX - roiSize);
-            let ry = Math.max(0, checkY - roiSize);
-            let rw = Math.min(width - rx, roiSize * 2);
-            let rh = Math.min(height - ry, roiSize * 2);
-
-            if (rw <= 0 || rh <= 0) continue;
-
-            let roi = gray.roi(new cv.Rect(rx, ry, rw, rh));
-
-            // นับจำนวนพิกเซลสีดำ (ค่าความเข้มข้น)
-            let blackPixels = cv.countNonZero(roi);
-
-            // ถ้าจำนวนพิกเซลดำมากกว่าค่าที่กำหนด แสดงว่าฝน
-            if (blackPixels > maxBlackPixels && blackPixels > rw * rh * 0.3) {
-              // 30% ของพื้นที่ถือว่าฝน
-              maxBlackPixels = blackPixels;
-              selectedChoice = c + 1; // 1-5
+            if (approx.rows === 4) {
+              // ต้องเป็นสี่เหลี่ยม
+              let rect = cv.boundingRect(approx);
+              let aspect = rect.width / rect.height;
+              // ต้องใกล้เคียงสี่เหลี่ยมจัตุรัส
+              if (aspect > 0.8 && aspect < 1.2) {
+                markers.push({
+                  x: rect.x + rect.width / 2,
+                  y: rect.y + rect.height / 2,
+                });
+              }
             }
-            roi.delete();
+            approx.delete();
           }
-
-          answers[q] = selectedChoice;
         }
 
+        gray.delete();
+        binary.delete();
+        contours.delete();
+        hierarchy.delete();
+
+        if (markers.length < 4) {
+          alert(
+            `หาจุด Markers ไม่ครบ 4 มุม (พบ ${markers.length} จุด)\nกรุณาถ่ายให้เห็นสี่เหลี่ยมดำทั้ง 4 มุมชัดเจน`,
+          );
+          return null;
+        }
+
+        // เรียงลำดับจุด 4 มุม (Top-Left, Top-Right, Bottom-Right, Bottom-Left)
+        markers.sort((a, b) => a.x + a.y - (b.x + b.y));
+        let tl = markers[0];
+        let br = markers[markers.length - 1];
+
+        markers.sort((a, b) => b.x - a.x - (a.y - b.y)); // wait, sorting logic for TR and BL
+        // Better sorting:
+        markers.sort((a, b) => a.x + a.y - (b.x + b.y));
+        tl = markers[0];
+        br = markers[3];
+        markers.sort((a, b) => a.x - a.y - (b.x - b.y));
+        let bl = markers[0];
+        let tr = markers[3];
+
+        // สร้าง Matrix สำหรับ Warp
+        let srcTri = cv.matFromArray(4, 1, cv.CV_32FC2, [
+          tl.x,
+          tl.y,
+          tr.x,
+          tr.y,
+          br.x,
+          br.y,
+          bl.x,
+          bl.y,
+        ]);
+        let dstTri = cv.matFromArray(4, 1, cv.CV_32FC2, [
+          0,
+          0,
+          config.canvasW,
+          0,
+          config.canvasW,
+          config.canvasH,
+          0,
+          config.canvasH,
+        ]);
+
+        let M = cv.getPerspectiveTransform(srcTri, dstTri);
+        let warped = new cv.Mat();
+        cv.warpPerspective(
+          src,
+          warped,
+          M,
+          new cv.Size(config.canvasW, config.canvasH),
+          cv.INTER_LINEAR,
+          cv.BORDER_CONSTANT,
+          new cv.Scalar(),
+        );
+
+        srcTri.delete();
+        dstTri.delete();
+        M.delete();
+        return warped;
+      }
+
+      // --- ฟังก์ชันวาดเป้า Debug ---
+      function drawDebugGrid(warpedMat) {
+        let debugImg = new cv.Mat();
+        if (!warpedMat) {
+          // ถ้าไม่ได้ส่งมา ให้ดึงจาก capture canvas ใหม่
+          let src = cv.imread(captureCanvas);
+          warpedMat = getWarpedImage(src);
+          src.delete();
+          if (!warpedMat) return;
+        }
+
+        warpedMat.copyTo(debugImg);
+
+        let color = new cv.Scalar(0, 0, 255, 255); // สีแดง
+        let radius = 15;
+
+        for (let col = 0; col < 2; col++) {
+          // 0 = ซ้าย, 1 = ขวา
+          for (let row = 0; row < 10; row++) {
+            // 10 แถว
+            let baseX =
+              col === 0 ? config.startX : config.startX + config.gapX * 6 + 50; // เว้นระยะห่างระหว่างคอลัมน์ซ้าย-ขวา
+            let baseY = config.startY + row * config.gapY;
+
+            for (let c = 0; c < 5; c++) {
+              // 5 ตัวเลือก
+              let cx = Math.floor(baseX + c * config.gapX);
+              let cy = Math.floor(baseY);
+              cv.circle(debugImg, new cv.Point(cx, cy), radius, color, 2);
+            }
+          }
+        }
+
+        cv.imshow("debug-canvas", debugImg);
+        debugCanvas.style.display = "block";
+        video.style.display = "none";
+        debugImg.delete();
+        warpedMat.delete();
+      }
+
+      // --- ฟังก์ชันสแกนหาคำตอบจากภาพที่ Warp แล้ว ---
+      function scanBubbles(warpedMat) {
+        let answers = new Array(20).fill(null);
+        let gray = new cv.Mat();
+        cv.cvtColor(warpedMat, gray, cv.COLOR_RGBA2GRAY);
+        cv.threshold(gray, gray, 128, 255, cv.THRESH_BINARY_INV);
+
+        let radius = 12; // รัศมีในการตรวจหาความเข้ม
+
+        for (let col = 0; col < 2; col++) {
+          for (let row = 0; row < 10; row++) {
+            let qIndex = col === 0 ? row : row + 10; // ข้อ 1-10 หรือ 11-20
+
+            let baseX =
+              col === 0 ? config.startX : config.startX + config.gapX * 6 + 50;
+            let baseY = config.startY + row * config.gapY;
+
+            let maxBlackPixels = 0;
+            let selectedChoice = null;
+
+            for (let c = 0; c < 5; c++) {
+              let cx = Math.floor(baseX + c * config.gapX);
+              let cy = Math.floor(baseY);
+
+              // สร้าง ROI วงกลมเพื่อตรวจ
+              let rx = Math.max(0, cx - radius);
+              let ry = Math.max(0, cy - radius);
+              let rw = Math.min(gray.cols - rx, radius * 2);
+              let rh = Math.min(gray.rows - ry, radius * 2);
+
+              if (rw <= 0 || rh <= 0) continue;
+
+              let roi = gray.roi(new cv.Rect(rx, ry, rw, rh));
+              let blackPixels = cv.countNonZero(roi);
+              let totalPixels = rw * rh;
+              let fillRatio = (blackPixels / totalPixels) * 100;
+
+              // ถ้าอัตราส่วนการฝนมากกว่าค่าที่ตั้งไว้
+              if (fillRatio > config.threshold && fillRatio > maxBlackPixels) {
+                maxBlackPixels = fillRatio;
+                selectedChoice = c + 1;
+              }
+              roi.delete();
+            }
+            answers[qIndex] = selectedChoice;
+          }
+        }
         gray.delete();
         return answers;
       }
@@ -417,11 +565,6 @@
       function closeModal() {
         document.getElementById("result-modal").style.display = "none";
       }
-
-      // เริ่มทำงาน
-      window.onload = () => {
-        startCamera();
-      };
     </script>
   </body>
 </html>
